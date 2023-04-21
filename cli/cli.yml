@@ -16,56 +16,56 @@ cli:
       user: ***REMOVED***
       pass: ***REMOVED***
       scope: openid
-# token generation method: "password", "sams-password", or "client"
-      credential-mode: client
+      credential-mode: password # token generation method: "password", "sams-password", or "client"
     patient-list:
-      - patient-list-path: /Patient?identifier=MRN%7C5505433
-      #/Patient?identifier=
+      - patient-list-path: /List/e72zPOGn1BeZwRyQKvjc8oeVWP49i19AUjEVxspBxBJIU8cMgF7ozFWHOZ6WKKHbo3 
+      #/Patient?identifier=MRN%7C5505433
       #/STU3/List/e72zPOGn1BeZwRyQKvjc8oeVWP49i19AUjEVxspBxBJIU8cMgF7ozFWHOZ6WKKHbo3
         census-identifier:
           - thsameasure
-          - nhsnglycemiccontrolhypoglycemicinitialpopulation
-          - adultpatients
+
 uscore:
-  fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/R4
+  fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/STU3
+  #fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/R4
 
 query:
   query-class: com.lantanagroup.link.query.uscore.Query
   auth-class: com.lantanagroup.link.query.auth.EpicAuth
-  fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/R4
+  fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/STU3
   auth:
     epic:
       token-url: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/oauth2/token
       audience: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/oauth2/token
-      client-id:  b3b40241-fb7a-4df8-b221-94d2837b93e9
+      client-id: ***REMOVED***
       
       key: '***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***'
-#   prod-client-id: 6806abcf-0c8b-40ca-9e85-67b394d9fb8b
-#   non-prod-client-id: b3b40241-fb7a-4df8-b221-94d2837b93e9
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***
+            ***REMOVED***'
+#                       Old                                   New      
+#   prod-client-id:     6806abcf-0c8b-40ca-9e85-67b394d9fb8b  ***REMOVED***
+#   non-prod-client-id: b3b40241-fb7a-4df8-b221-94d2837b93e9  ***REMOVED***
 #   key: 'MIIEvQ...'
       
