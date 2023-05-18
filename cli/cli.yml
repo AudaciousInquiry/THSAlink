@@ -1,72 +1,39 @@
 cli:
   generate-and-submit:
-    bundleIds: testBundle
+    bundleIds:
   query:
     data-store:
-      base-url: https://thsa1.sanerproject.org:944?/fhir
-      username: temp-user
-      password: temp-password!
-    fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/STU3
+      base-url:
+      username:
+      password:
+    fhir-server-base:
+    uscore:
+      fhir-server-base:
 
   refresh-patient-list:
-    api-url: https://thsa1.sanerproject.org:9440/api
+    api-url:
     auth:
-      token-url: https://thsa1.sanerproject.org:8443/realms/THSA/protocol/openid-connect/token
-      ***REMOVED***
-      client-secret: ''
-      user: ***REMOVED***
-      pass: ***REMOVED***
-      scope: openid
-      credential-mode: password # token generation method: "password", "sams-password", or "client"
+      token-url:
+      client-id:
+      client-secret:
+      user:
+      pass:
+      scope:
+      credential-mode:
     patient-list:
-      - patient-list-path: /List/e72zPOGn1BeZwRyQKvjc8oeVWP49i19AUjEVxspBxBJIU8cMgF7ozFWHOZ6WKKHbo3 
-      #/Patient?identifier=MRN%7C5505433
-      #/STU3/List/e72zPOGn1BeZwRyQKvjc8oeVWP49i19AUjEVxspBxBJIU8cMgF7ozFWHOZ6WKKHbo3
+      - patient-list-path:
         census-identifier:
-          - thsameasure
-
+          -
 uscore:
-  fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/STU3
-  #fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/R4
+  fhir-server-base:
 
 query:
-  query-class: com.lantanagroup.link.query.uscore.Query
-  auth-class: com.lantanagroup.link.query.auth.EpicAuth
-  fhir-server-base: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/api/FHIR/STU3
+  auth-class:
+  query-class:
+  fhir-server-base:
   auth:
     epic:
-      token-url: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/oauth2/token
-      audience: https://pmh-vmhaitst-01.pmh.org/FHIRVALPHI/oauth2/token
-      client-id: ***REMOVED***
-      
-      key: '***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***
-            ***REMOVED***'
-#                       Old                                   New      
-#   prod-client-id:     6806abcf-0c8b-40ca-9e85-67b394d9fb8b  ***REMOVED***
-#   non-prod-client-id: b3b40241-fb7a-4df8-b221-94d2837b93e9  ***REMOVED***
-#   key: 'MIIEvQ...'
-      
+      token-url:
+      audience:
+      client-id:
+      key:
