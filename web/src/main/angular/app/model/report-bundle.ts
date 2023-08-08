@@ -10,7 +10,8 @@ export class ReportBundle {
         periodEndDate: string;
         creationDate: Date;
         submittedDate: string;
-        note: string
+        note: string;
+        reportMeasure: string
     }[];
     totalSize: bigint;
 }
