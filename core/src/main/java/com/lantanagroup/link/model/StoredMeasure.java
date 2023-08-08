@@ -14,5 +14,6 @@ import java.util.List;
 public class StoredMeasure {
   private String id;
   private String name;
+  private String system;
   private List<String> bundleIds = new ArrayList<>();
 }
