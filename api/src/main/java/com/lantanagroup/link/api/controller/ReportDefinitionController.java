@@ -76,6 +76,10 @@ public class ReportDefinitionController extends BaseController {
         storedMeasure.setName(reportDefinitionBundle.getIdentifier().getValue());
       }
 
+      //String reportMeasure = docReference.getIdentifier().get(0).getSystem() + "|" + docReference.getIdentifier().get(0).getValue();
+      //storedMeasure.setValue(reportDefinitionBundle.getIdentifier().getValue());
+      storedMeasure.setSystem(reportDefinitionBundle.getIdentifier().getSystem());
+
       storedMeasure.setId(reportDefinitionBundle.getIdElement().getIdPart());
 
       storedMeasure.getBundleIds().add(reportDefinitionBundle.getIdElement().getIdPart());
