@@ -162,7 +162,14 @@ export class ReviewComponent implements OnInit {
   }
 
   getSubmitterName(submitterId: string) {
-    let foundSubmitter = (this.submitters || []).find((m) => m.id === submitterId);
+    let submitterIdPart = '';
+    // the submitter id coming back from /api/report call is going to look like
+    // Practitioner/8336bc42-65ad-47af-b542-4db24c78107a so here we get just
+    // the id part.
+    if (submitterId != null) {
+      submitterIdPart = submitterId.substr(submitterId.indexOf('/') + 1);
+    }
+    let foundSubmitter = (this.submitters || []).find((m) => m.id === submitterIdPart);
     if (foundSubmitter != undefined && foundSubmitter.id != undefined) return foundSubmitter.name;
   }
 
