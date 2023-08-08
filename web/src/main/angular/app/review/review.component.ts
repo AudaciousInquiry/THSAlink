@@ -148,8 +148,8 @@ export class ReviewComponent implements OnInit {
       measureSystem = measure.substr(0, measure.indexOf("|"));
       measureId = measure.substr(measure.indexOf("|") + 1);
     }
-    let foundMeasure = (this.measures || []).find((m) => m[0].value === measureId && m[0].system === measureSystem);
-    if (foundMeasure != undefined && foundMeasure[0].value != undefined) return foundMeasure.name;
+    let foundMeasure = this.measures.find((m) => m.id === measureId);
+    if (foundMeasure != undefined && foundMeasure.id != undefined) return foundMeasure.name;
   }
 
   getStatusName(status: string) {
@@ -188,9 +188,12 @@ export class ReviewComponent implements OnInit {
   async ngOnInit() {
     this.loading = true;
     try{
-      await this.searchReports();
+
       this.measures = await this.reportDefinitionService.getReportDefinitions();
       this.submitters = await this.reportService.getSubmitters();
+
+      await this.searchReports();
+
     }
     catch (ex){
       this.toastService.showException('Error populating report list.', ex);
