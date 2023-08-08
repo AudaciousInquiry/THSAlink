@@ -103,7 +103,7 @@ export class ReviewComponent implements OnInit {
       if (this.filter.measure !== "Select measure") {
         // find the measure
         const measure = this.measures.find(p => p.name === this.filter.measure);
-        filterCriteria += `identifier=${encodeURIComponent(measure[0].system + "|" + measure[0].value)}&`
+        filterCriteria += `identifier=${encodeURIComponent(measure.system + "|" + measure.id)}&`
       }
       if (this.filter.status !== 'Select status') {
         const status = this.statuses.find(p => p.name === this.filter.status);
