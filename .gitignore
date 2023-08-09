@@ -5,6 +5,7 @@ web/node_modules/
 web/src/main/angular/assets/local.json
 web/src/main/angular/assets/local-*.json
 web/dist/
+web/.idea/
 
 target/
 *.iml
