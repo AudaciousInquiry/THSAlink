@@ -745,14 +745,14 @@ public class ReportController extends BaseController {
 
     bundle = this.getFhirDataProvider().fetchResourceFromUrl(url);
     List<Report> lst = bundle.getEntry().parallelStream().map(Report::new).collect(Collectors.toList());
-    List<String> reportIds = lst.stream().map(report -> report.getId()).collect(Collectors.toList());
+    List<String> reportIds = lst.stream().map(report -> ReportIdHelper.getMasterMeasureReportId(report.getId(),report.getReportMeasure().getValue())).collect(Collectors.toList());
     Bundle response = this.getFhirDataProvider().getMeasureReportsByIds(reportIds);
 
     response.getEntry().parallelStream().forEach(bundleEntry -> {
       if (bundleEntry.getResource().getResourceType().equals(ResourceType.MeasureReport)) {
         MeasureReport measureReport = (MeasureReport) bundleEntry.getResource();
         Extension extension = measureReport.getExtensionByUrl(Constants.NotesUrl);
-        Report foundReport = lst.stream().filter(rep -> rep.getId().equals(measureReport.getIdElement().getIdPart())).findAny().orElse(null);
+        Report foundReport = lst.stream().filter(rep -> rep.getId().equals(measureReport.getIdElement().getIdPart().split("-")[0])).findAny().orElse(null);
         if (extension != null && foundReport != null) {
           foundReport.setNote(extension.getValue().toString());
         }

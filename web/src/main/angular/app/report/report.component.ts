@@ -188,13 +188,13 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   async save(report) {
     const reportSaveModel = new ReportSaveModel();
-    reportSaveModel.measureReport = report;
+    reportSaveModel.measureReport = report.measureReport;
     try {
-      await this.reportService.save(reportSaveModel, report.masterReport.reportId);
+      await this.reportService.save(reportSaveModel, this.masterId);
       this.toastService.showInfo('Report saved!');
       this.dirty = false;
     } catch (ex) {
-      this.toastService.showException('Error saving report: ' + report.masterReport.reportId, ex);
+      this.toastService.showException('Error saving report: ' + this.masterId, ex);
     }
   }
 
