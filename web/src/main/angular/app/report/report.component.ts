@@ -44,8 +44,21 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   getRepVersionNumber() {
-    if (!this.reportModel) return 0;
-    return Number(this.reportModel.version);
+    if (this.reportModel && this.reportModel.version) {
+      return Number(this.reportModel.version);
+    }
+  }
+
+  getReportVersion() {
+    if (this.reportModel && this.reportModel.version) {
+      return this.reportModel.version;
+    }
+  }
+
+  getReportDate() {
+    if (this.reportModel && this.reportModel.date) {
+      return this.reportModel.date;
+    }
   }
 
 
