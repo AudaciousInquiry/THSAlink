@@ -141,12 +141,12 @@ export class ReviewComponent implements OnInit {
     this.filter.reportTypeId = reportBundle.reportTypeId;
   }
 
-  getMeasureName(measure: string) {
+  getMeasureName(measure: any) {
     let measureSystem = '';
     let measureId = '';
     if (measure != null) {
-      measureSystem = measure.substr(0, measure.indexOf("|"));
-      measureId = measure.substr(measure.indexOf("|") + 1);
+      measureSystem = measure.system; // measure.substr(0, measure.indexOf("|"));
+      measureId = measure.value; // measure.substr(measure.indexOf("|") + 1);
     }
     let foundMeasure = this.measures.find((m) => m.id === measureId);
     if (foundMeasure != undefined && foundMeasure.id != undefined) return foundMeasure.name;
