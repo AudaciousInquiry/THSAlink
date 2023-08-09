@@ -16,6 +16,8 @@ public class ReportModel {
     private String status;
     private Date date;
     private List<ReportMeasure> reportMeasureList = new ArrayList<>();
+    private Date reportPeriodStart;
+    private Date reportPeriodEnd;
 
     @Getter
     @Setter

@@ -44,8 +44,21 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   getRepVersionNumber() {
-    if (!this.reportModel) return 0;
-    return Number(this.reportModel.version);
+    if (this.reportModel && this.reportModel.version) {
+      return Number(this.reportModel.version);
+    }
+  }
+
+  getReportVersion() {
+    if (this.reportModel && this.reportModel.version) {
+      return this.reportModel.version;
+    }
+  }
+
+  getReportDate() {
+    if (this.reportModel && this.reportModel.date) {
+      return this.reportModel.date;
+    }
   }
 
 
@@ -161,29 +174,41 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  getReportPeriodStart() {
+    if (this.reportModel && this.reportModel.reportPeriodStart) {
+      return this.reportModel.reportPeriodStart;
+    }
+  }
+
+  getReportPeriodEnd() {
+    if (this.reportModel && this.reportModel.reportPeriodEnd) {
+      return this.reportModel.reportPeriodEnd;
+    }
+  }
+
   async save(report) {
     const reportSaveModel = new ReportSaveModel();
-    reportSaveModel.measureReport = report;
+    reportSaveModel.measureReport = report.measureReport;
     try {
-      await this.reportService.save(reportSaveModel, report.masterReport.reportId);
+      await this.reportService.save(reportSaveModel, this.masterId);
       this.toastService.showInfo('Report saved!');
       this.dirty = false;
     } catch (ex) {
-      this.toastService.showException('Error saving report: ' + report.masterReport.reportId, ex);
+      this.toastService.showException('Error saving report: ' + this.masterId, ex);
     }
   }
 
   async regenerate() {
     this.loading = true;
     this.regenerateReportButtonText = 'Loading...';
-    const bundleIds = (this.reportMeasureList || []).map(reportMeasure => reportMeasure.bundleId) + '';
+    const bundleIds = (this.reportMeasureList || []).map(reportMeasure => reportMeasure.bundleId);
 
     try {
       if (confirm('Confirm re-generate?\n Re-generating will re-acquire the latest date from the EHR for the period and re-evaluate the measure. ' +
           'Once re-evaluated, the newest calculated aggregate totals will be updated in this report. ' +
           'Fields not calculated as part of the measure will not be affected. Are you sure you want to continue?')) {
         try {
-          const generateResponse = await this.reportService.generate(bundleIds, formatDateToISO(this.reportMeasureList[0].measureReport.period.start), formatDateToISO(this.reportMeasureList[0].measureReport.period.end), true);
+          const generateResponse = await this.reportService.generate(bundleIds, formatDateToISO(this.reportModel.reportPeriodStart), formatDateToISO(this.reportModel.reportPeriodEnd), true);
           await this.router.navigate(['review', generateResponse.masterId]);
           this.toastService.showInfo('Report re-generated!');
           await this.initReport();
@@ -191,7 +216,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           if (ex.status === 409) {
             if (confirm(ex.error.message)) {
               try {
-                const generateResponse = await this.reportService.generate(bundleIds, formatDateToISO(this.reportMeasureList[0].measureReport.period.start), formatDateToISO(this.reportMeasureList[0].measureReport.period.end), true);
+                const generateResponse = await this.reportService.generate(bundleIds, formatDateToISO(this.reportModel.reportPeriodStart), formatDateToISO(this.reportModel.reportPeriodEnd), true);
                 await this.router.navigate(['review', generateResponse.masterId]);
               } catch (ex) {
                 this.toastService.showException('Error re-generating report', ex);
