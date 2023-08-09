@@ -161,6 +161,18 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  getReportPeriodStart() {
+    if (this.reportModel && this.reportModel.reportPeriodStart) {
+      return this.reportModel.reportPeriodStart;
+    }
+  }
+
+  getReportPeriodEnd() {
+    if (this.reportModel && this.reportModel.reportPeriodEnd) {
+      return this.reportModel.reportPeriodEnd;
+    }
+  }
+
   async save(report) {
     const reportSaveModel = new ReportSaveModel();
     reportSaveModel.measureReport = report;
