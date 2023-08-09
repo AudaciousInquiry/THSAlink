@@ -20,7 +20,7 @@ public class Report {
   Date creationDate;
   String submittedDate;
   String note;
-  String reportMeasure;
+  ReportMeasure reportMeasure;
 
   public Report (Bundle.BundleEntryComponent entry) {
     DocumentReference docReference = (DocumentReference) entry.getResource();
@@ -48,8 +48,10 @@ public class Report {
     }
 
     if (!docReference.getIdentifier().isEmpty()) {
-      String reportMeasure = docReference.getIdentifier().get(0).getSystem() + "|" + docReference.getIdentifier().get(0).getValue();
-      this.setReportMeasure(reportMeasure);
+      ReportMeasure rm = new ReportMeasure();
+      rm.setSystem(docReference.getIdentifier().get(0).getSystem());
+      rm.setValue(docReference.getIdentifier().get(0).getValue());
+      this.setReportMeasure(rm);
     }
   }
 }
