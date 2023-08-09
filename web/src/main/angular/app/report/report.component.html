@@ -17,7 +17,7 @@
             <div class="input-group-text">Reporting Period</div>
         </div>
         <div class="form-control">
-            <span class="labelForPeriod">{{periodStart | date : 'MM/dd/yyyy'}}</span>-<span class="labelForPeriod">{{periodEnd | date: 'MM/dd/yyyy'}}</span>
+            <span class="labelForPeriod">{{getReportPeriodStart() | date: 'MM/dd/yyyy HH:mm:ss':"UTC"}}</span>-<span class="labelForPeriod">{{getReportPeriodEnd() | date: 'MM/dd/yyyy HH:mm:ss':"UTC"}}</span>
         </div>
     </span>
 

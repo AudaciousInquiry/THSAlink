@@ -499,6 +499,8 @@ public class ReportController extends BaseController {
       reportModel.setStatus(documentReference.getDocStatus().toString());
       reportModel.setDate(documentReference.getDate());
       reportModelList.add(reportMeasure);
+      reportModel.setReportPeriodStart(documentReference.getContext().getPeriod().getStart());
+      reportModel.setReportPeriodEnd(documentReference.getContext().getPeriod().getEnd());
     }
     return reportModel;
   }
