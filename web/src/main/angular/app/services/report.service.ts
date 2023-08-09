@@ -17,10 +17,15 @@ export class ReportService {
   }
 
 
-  async generate(bundleIds: string, periodStart: string, periodEnd: string, regenerate = false) {
+  async generate(bundleIds: string[], periodStart: string, periodEnd: string, regenerate = false) {
     let url = 'report/$generate?';
     url = this.configService.getApiUrl(url);
-    const generateRequest = {bundleIds, periodStart,  periodEnd, regenerate: (regenerate ? 'true' : 'false') };
+    const generateRequest = {
+      bundleIds,
+      periodStart,
+      periodEnd,
+      regenerate: (regenerate ? 'true' : 'false')
+    };
     return await this.http.post<GenerateResponse>(url, generateRequest).toPromise();
   }
 
