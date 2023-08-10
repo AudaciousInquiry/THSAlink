@@ -23,11 +23,11 @@
                             <span>{{authService.user.name}}</span>
                         </button>
                         <div ngbDropdownMenu aria-labelledby="userDropDown">
-                            <a href="http://www.lantanagroup.com/our-software-products/nandina/" target="_new" ngbDropdownItem>
-                                <i class="fa fa-info-circle"></i> About NHSNLink
+                            <a href="{{configService.config.about.url}}" target="_new" ngbDropdownItem>
+                                <i class="fa fa-info-circle"></i> {{configService.config.about.labelText}}
                             </a>
-                            <a href="https://github.com/lantanagroup/link" target="_new" ngbDropdownItem>
-                                <i class="fa fa-github"></i> GitHub
+                            <a href="{{configService.config.github.url}}" target="_new" ngbDropdownItem>
+                                <i class="fa fa-github"></i>  {{configService.config.github.labelText}}
                             </a>
                             <a [href]="configService.config.getHelpUrl" *ngIf="configService.config?.getHelpUrl" target="_blank" ngbDropdownItem>
                                 <i class="fa fa-question-circle"></i> Get Help
@@ -48,16 +48,16 @@
             </div>
         </div>
 
-<!--        <ul ngbNav #nav="ngbNav" *ngIf="authService.user" class="nav-tabs">-->
-<!--            <li role="presentation" ngbNavItem>-->
-<!--                <a ngbNavLink routerLinkActive [class.active]="rla.isActive" #rla="routerLinkActive"-->
-<!--                   routerLink="generate">Generate</a>-->
-<!--            </li>-->
-<!--            <li role="presentation" ngbNavItem>-->
-<!--                <a ngbNavLink routerLinkActive [class.active]="rla1.isActive" #rla1="routerLinkActive"-->
-<!--                   routerLink="review">Review</a>-->
-<!--            </li>-->
-<!--        </ul>-->
+        <!--        <ul ngbNav #nav="ngbNav" *ngIf="authService.user" class="nav-tabs">-->
+        <!--            <li role="presentation" ngbNavItem>-->
+        <!--                <a ngbNavLink routerLinkActive [class.active]="rla.isActive" #rla="routerLinkActive"-->
+        <!--                   routerLink="generate">Generate</a>-->
+        <!--            </li>-->
+        <!--            <li role="presentation" ngbNavItem>-->
+        <!--                <a ngbNavLink routerLinkActive [class.active]="rla1.isActive" #rla1="routerLinkActive"-->
+        <!--                   routerLink="review">Review</a>-->
+        <!--            </li>-->
+        <!--        </ul>-->
 
         <router-outlet></router-outlet>
     </div>
