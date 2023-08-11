@@ -13,6 +13,7 @@
     <div class="card-header">Report Generation Criteria</div>
     <div class="card-body">
         <div class="row">
+            <!--
             <div class="col-md-1">
                 <p><strong>
                     All historical
@@ -29,12 +30,14 @@
                         value=""/>
                 </div>
             </div>
+            -->
             <div class="col-md-2">
                 <p><strong>Report Start Date</strong></p>
                 <!--p class="help-block">For which patient impact and hospital capacity counts are reported.</p-->
                 <div class="input-group">
+                    <!--[disabled]="checkbox.checked" This was in the input below for the All Historical button that I disabled...-->
                     <input [(ngModel)]="criteria.periodStart" (ngModelChange)="onStartDateSelected()"
-                           [disabled]="checkbox.checked"
+
                            class="form-control" name="dp" ngbDatepicker #d="ngbDatepicker"
                            placeholder="{{startDate | date: 'yyyy-MM-dd'}}">
                     <div class="input-group-append">
