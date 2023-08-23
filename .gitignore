@@ -2,8 +2,7 @@ docs/
 web/nginx-assets-local.json
 web/.angular/cache/
 web/node_modules/
-web/src/main/angular/assets/local.json
-web/src/main/angular/assets/local-*.json
+web/src/main/angular/assets/configuration/*.json
 web/dist/
 web/.idea/
 
