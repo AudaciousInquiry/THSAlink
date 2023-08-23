@@ -20,7 +20,7 @@ export class ConfigService {
 
   async loadOverrideConfig() {
     try {
-      const overrideConfig = await this.http.get<IConfig>('./assets/local.json').toPromise();
+      const overrideConfig = await this.http.get<IConfig>('./assets/configuration/local.json').toPromise();
       Object.assign(this.config, overrideConfig);
     } catch {
       // Never throw error if there is a problem loading the override config
@@ -28,7 +28,7 @@ export class ConfigService {
   }
 
   async loadConfig() {
-    this.config = await this.http.get<IConfig>('./assets/config.json').toPromise();
+    this.config = await this.http.get<IConfig>('./assets/configuration/config.json').toPromise();
     await this.loadOverrideConfig();
   }
 
