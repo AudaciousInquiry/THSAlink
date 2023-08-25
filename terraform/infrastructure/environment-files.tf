@@ -49,9 +49,24 @@ module "web-configuration-file" {
   s3-bucket = module.ecs-configuration-s3.s3_bucket
 }
 
+# Upload config.json File Required By NGINX on Web Component
 module "web-configuration-file2" {
   source = "../modules/s3-file"
   file-name = "web/config.json"
+  file-path = "../environment-files/"
+  s3-bucket = module.ecs-configuration-s3.s3_bucket
+}
+
+# Upload Cert Files Required By Keycloak
+module "keycloak-cert-file" {
+  source = "../modules/s3-file"
+  file-name = "keycloak/EXP-2023-Sept-07.thsa1.sanerproject.org.crt.pem"
+  file-path = "../environment-files/"
+  s3-bucket = module.ecs-configuration-s3.s3_bucket
+}
+module "keycloak-cert-key-file" {
+  source = "../modules/s3-file"
+  file-name = "keycloak/EXP-2023-Sept-07.thsa1.sanerproject.org.key.pem"
   file-path = "../environment-files/"
   s3-bucket = module.ecs-configuration-s3.s3_bucket
 }
