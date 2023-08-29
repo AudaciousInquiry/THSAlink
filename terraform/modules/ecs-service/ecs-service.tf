@@ -28,10 +28,13 @@ resource "aws_ecs_service" "ecs_service" {
     platform_version = "LATEST"
     scheduling_strategy = "REPLICA"
 
-    load_balancer {
-        container_name = "${var.environment}-${var.customer}-${var.project_code}-${var.application_code}"
-        container_port = var.container_port
-        target_group_arn = var.target_group.arn
+    dynamic "load_balancer" {
+        for_each = var.target_group != null ? [1] : []
+        content {
+            container_name = "${var.environment}-${var.customer}-${var.project_code}-${var.application_code}"
+            container_port = var.container_port
+            target_group_arn = var.target_group.arn
+        }
     }
 
     dynamic "service_connect_configuration" {

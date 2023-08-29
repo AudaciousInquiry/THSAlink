@@ -70,3 +70,11 @@ module "keycloak-cert-key-file" {
   file-path = "../environment-files/"
   s3-bucket = module.ecs-configuration-s3.s3_bucket
 }
+
+# Upload Keycloak Environment File
+module "keycloak-environment-file" {
+  source = "../modules/s3-file"
+  file-name = "keycloak/keycloak.env"
+  file-path = "../environment-files/"
+  s3-bucket = module.ecs-configuration-s3.s3_bucket
+}

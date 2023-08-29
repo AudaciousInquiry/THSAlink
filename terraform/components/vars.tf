@@ -165,3 +165,28 @@ variable "web_external_listener_port" {
 variable "web_docker_image_name" {
   type = string
 }
+
+# KEYCLOAK SPECIFIC
+variable "keycloak_docker_tag" {
+  type = string
+}
+
+variable "keycloak_cpu_size" {
+  type = string
+}
+
+variable "keycloak_memory_size" {
+  type = string
+}
+
+variable "keycloak_container_port" {
+  type = number
+}
+
+variable "keycloak_external_listener_port" {
+  type = string
+}
+
+variable "keycloak_docker_image_name" {
+  type = string
+}

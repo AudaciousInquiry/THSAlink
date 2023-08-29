@@ -13,3 +13,7 @@ output "ecs_cluster_id" {
 output "cqf-environment-file" {
   value = module.cqf-environment-file.s3-file
 }
+
+output "keycloak-environment-file" {
+  value = module.keycloak-environment-file.s3-file
+}
