@@ -2,7 +2,6 @@ resource "aws_lb_target_group" "target-group" {
   connection_termination = "false"
   deregistration_delay   = "300"
 
-  /*
   health_check {
     enabled = "true"
     healthy_threshold   = "5"
@@ -12,26 +11,13 @@ resource "aws_lb_target_group" "target-group" {
     timeout = "10"
     unhealthy_threshold = "5"
   }
-  */
-
-  health_check {
-    enabled = "true"
-    healthy_threshold   = "5"
-    interval = "30"
-    port = "traffic-port"
-    protocol = "HTTP"
-    timeout = "10"
-    unhealthy_threshold = "5"
-    matcher = "200,403,404"
-    path = var.healthcheck_path
-  }
 
   ip_address_type = "ipv4"
   load_balancing_cross_zone_enabled = "use_load_balancer_configuration"
   name = "${var.environment}-${var.customer}-${var.project_code}-${var.application_code}"
   port = var.container_port
   preserve_client_ip = "false"
-  protocol = "TCP" # TODO make configurable
+  protocol = "TLS"
   proxy_protocol_v2 = "false"
 
   stickiness {
