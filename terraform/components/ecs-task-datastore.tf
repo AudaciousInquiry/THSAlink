@@ -88,4 +88,5 @@ module "target-group-datastore" {
   loadbalancer_arn = var.loadbalancer_arn
   listener_port = var.datastore_external_listener_port
   healthcheck_path = "/fhir/metadata"
+  container_port = var.datastore_container_port
 }
