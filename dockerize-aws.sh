@@ -6,23 +6,30 @@ if [ -z "$1" ]
 		exit
 fi
 
-
-
 TAGVERSION=$1
 AWS_REGION="us-east-1"
 AWS_PROFILE="starhie"
 AWS_ECR_REPOSITORY="public.ecr.aws/k2c9h9v2"
 PUSH="NO"
 
-if [ $# -eq 2 ] && [ "$2" == "PUSH" ]; then PUSH="YES"; fi
 
+declare -a image_tags=("thsa-link-api:./api/Dockerfile"
+"thsa-link-consumer:./consumer/Dockerfile"
+"thsa-link-cqf:./cqf-ruler/Dockerfile"
+"thsa-link-datastore:./datastore/Dockerfile"
+"thsa-link-web:./web/Dockerfile"
+"thsa-link-cli-refresh-patient-list:./cli/docker/refresh-patient-list/Dockerfile"
+"thsa-link-cli-generate-and-submit:./cli/docker/generate-and-submit/Dockerfile"
+"thsa-link-cli-expunge-data:./cli/docker/expunge-data/Dockerfile")
+
+if [ $# -eq 2 ] && [ "$2" == "PUSH" ]; then PUSH="YES"; fi
 
 printf "***************************************************************************\n"
 printf "* Building/Pushing Docker Imageas For Version: %s\n" "$1"
 printf "***************************************************************************\n"
 
 printf "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-printf "@ AWS SSO login using profile: " "$AWS_PROFILE\n"
+printf "@ AWS SSO login using profile: %s\n" "$AWS_PROFILE"
 printf "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
 aws sso login --profile "$AWS_PROFILE"
 
@@ -31,57 +38,19 @@ printf "@ Docker Auth With AWS\n"
 printf "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
 aws ecr-public get-login-password --region "$AWS_REGION" --profile "$AWS_PROFILE" | docker login --username AWS --password-stdin "$AWS_ECR_REPOSITORY"
 
-#printf "\t-->> Building API...\n"
-#docker build --no-cache --tag thsa-link-api --file ./api/Dockerfile .
-#printf "\t-->> Tagging API\n"
-#docker tag thsa-link-api "$AWS_ECR_REPOSITORY"/thsa-link-api:"$TAGVERSION"
-#if [ "$PUSH" == "YES" ]; then
-#    printf "\t-->> Pushing API\n"
-#    docker push "$AWS_ECR_REPOSITORY"/thsa-link-api:"$TAGVERSION"
-#else
-#	printf "\t-->> NOT Pushing\n"
-#fi
-#
-#printf "\t-->> Building CONSUMER...\n"
-#docker build --no-cache --tag thsa-link-consumer --file ./consumer/Dockerfile .
-#printf "\t-->> Tagging CONSUMER\n"
-#docker tag thsa-link-consumer "$AWS_ECR_REPOSITORY"/thsa-link-consumer:"$TAGVERSION"
-#if [ "$PUSH" == "YES" ]; then
-#	printf "\t-->> Pushing CONSUMER\n"
-#    docker push "$AWS_ECR_REPOSITORY"/thsa-link-consumer:"$TAGVERSION"
-#else
-#	printf "\t-->> NOT Pushing\n"
-#fi
-#
-#printf "\t-->> Building CQF...\n"
-#docker build --no-cache --tag thsa-link-cqf --file ./cqf-ruler/Dockerfile .
-#printf "\t-->> Tagging CQF\n"
-#docker tag thsa-link-cqf "$AWS_ECR_REPOSITORY"/thsa-link-cqf:"$TAGVERSION"
-#if [ "$PUSH" == "YES" ]; then
-#	printf "\t-->> Pushing CQF\n"
-#    docker push "$AWS_ECR_REPOSITORY"/thsa-link-cqf:"$TAGVERSION"
-#else
-#	printf "\t-->> NOT Pushing\n"
-#fi
-#
-#printf "\t-->> Building DATA STORE...\n"
-#docker build --no-cache --tag thsa-link-datastore --file ./datastore/Dockerfile .
-#printf "\t-->> Tagging DATA STORE\n"
-#docker tag thsa-link-datastore "$AWS_ECR_REPOSITORY"/thsa-link-datastore:"$TAGVERSION"
-#if [ "$PUSH" == "YES" ]; then
-#    printf "\t-->> Pushing DATA STORE\n"
-#    docker push "$AWS_ECR_REPOSITORY"/thsa-link-datastore:"$TAGVERSION"
-#else
-#	printf "\t-->> NOT Pushing\n"
-#fi
+for t in "${image_tags[@]}"
+do
+  image_tag="${t%%:*}"
+  docker_file="${t##*:}"
 
-printf "\t-->> Building WEB...\n"
-docker build --no-cache --tag thsa-link-web --file ./web/Dockerfile .
-printf "\t-->> Tagging WEB\n"
-docker tag thsa-link-web "$AWS_ECR_REPOSITORY"/thsa-link-web:"$TAGVERSION"
-if [ "$PUSH" == "YES" ]; then
-    printf "\t-->> Pushing WEB\n"
-    docker push "$AWS_ECR_REPOSITORY"/thsa-link-web:"$TAGVERSION"
-else
-	printf "\t-->> NOT Pushing\n"
-fi
+  printf "\t-->> Building %s...\n" "$image_tag"
+  docker build --no-cache --tag "$image_tag" --file "$docker_file" .
+  printf "\t-->> Tagging %s\n" "$image_tag"
+  docker tag "$image_tag" "$AWS_ECR_REPOSITORY"/"$image_tag":"$TAGVERSION"
+  if [ "$PUSH" == "YES" ]; then
+      printf "\t-->> Pushing %s\n" "$image_tag"
+      docker push "$AWS_ECR_REPOSITORY"/"$image_tag":"$TAGVERSION"
+  else
+    printf "\t-->> NOT Pushing\n"
+  fi
+done

@@ -78,3 +78,11 @@ module "keycloak-environment-file" {
   file-path = "../environment-files/"
   s3-bucket = module.ecs-configuration-s3.s3_bucket
 }
+
+# Upload CLI Configuration File
+module "cli-configuration-file" {
+  source = "../modules/s3-file"
+  file-name = "cli/cli-config.yml"
+  file-path = "../environment-files/"
+  s3-bucket = module.ecs-configuration-s3.s3_bucket
+}

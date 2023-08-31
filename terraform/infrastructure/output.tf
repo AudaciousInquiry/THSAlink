@@ -10,6 +10,10 @@ output "ecs_cluster_id" {
   value = module.ecs-cluster.ecs_cluster_id
 }
 
+output "ecs_cluster_arn" {
+  value = module.ecs-cluster.ecs_cluster_arn
+}
+
 output "cqf-environment-file" {
   value = module.cqf-environment-file.s3-file
 }

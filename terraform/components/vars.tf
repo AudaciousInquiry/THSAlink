@@ -6,6 +6,10 @@ variable "aws_profile" {
   type = string
 }
 
+variable "aws_account" {
+  type = string
+}
+
 variable "environment" {
   type = string
 }
@@ -38,6 +42,19 @@ variable "certificate_arn" {
 }
 
 variable "loadbalancer_arn" {
+  type = string
+}
+
+# DEFAULT CONTAINER STUFF
+variable "default_cpu_size" {
+  type = string
+}
+
+variable "default_memory_size" {
+  type = string
+}
+
+variable "default_docker_tag" {
   type = string
 }
 
