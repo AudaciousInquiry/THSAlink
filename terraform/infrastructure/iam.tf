@@ -71,29 +71,6 @@ resource "aws_iam_role" "iam-role" {
       ]
     })
   }
-
-  // Add inline policy to allow shell access to ECS tasks
-  /*
-  inline_policy {
-    name = "ECSFargateAllowExecuteCommand"
-    policy = jsonencode({
-      "Statement": [
-        {
-          "Action": [
-            "ssmmessages:CreateControlChannel",
-            "ssmmessages:CreateDataChannel",
-            "ssmmessages:OpenControlChannel",
-            "ssmmessages:OpenDataChannel"
-          ],
-          "Effect": "Allow",
-          "Resource": "*"
-        }
-      ],
-      "Version": "2012-10-17"
-    })
-  }
-  */
-
 }
 
 resource "aws_iam_role_policy_attachment" "role-policy-attachment" {
