@@ -1,0 +1,17 @@
+{
+  "apiUrl": "https://thsa1.sanerproject.org:10440/api",
+  "oauth": {
+    "issuer": "https://thsa1.sanerproject.org:8443/realms/THSA",
+    "clientId": "nhsnlink-app",
+    "scope": "openid profile email"
+  },
+  "logoPath": "assets/THSALink.png",
+  "about": {
+    "labelText": "About THSALink",
+    "url": "https://github.com/AudaciousInquiry/THSAlink/blob/master/README.md"
+  },
+  "github": {
+    "labelText": "GitHub",
+    "url": "https://github.com/AudaciousInquiry/THSAlink"
+  }
+}
