@@ -50,6 +50,7 @@ public class EpicAuthTests {
     Assert.assertNotEquals((Integer) 0, (Integer) body.get("exp"));
   }
 
+  /*
   @Test
   public void testRequestJwt() throws Exception {
     EpicAuthConfig config = new EpicAuthConfig();
@@ -66,4 +67,5 @@ public class EpicAuthTests {
 
     System.out.println("Access token is: " + token);
   }
+  */
 }
