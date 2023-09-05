@@ -1,5 +1,9 @@
 resource "aws_ecrpublic_repository" "thsa-link-api" {
   repository_name = "thsa-link-api"
+
+  catalog_data {
+    description = "API Component of THSALink Project"
+  }
 }
 
 resource "aws_ecrpublic_repository" "thsa-link-consumer" {
