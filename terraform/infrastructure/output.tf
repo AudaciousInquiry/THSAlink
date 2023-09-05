@@ -21,3 +21,7 @@ output "cqf-environment-file" {
 output "keycloak-environment-file" {
   value = module.keycloak-environment-file.s3-file
 }
+
+output "discovery_service_arn" {
+  value = module.service-discover-namespace.discovery_service_arn
+}

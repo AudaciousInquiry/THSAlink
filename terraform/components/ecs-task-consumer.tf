@@ -50,8 +50,7 @@ module "ecs-task-consumer" {
   volume_root_directory = "/consumer"
 }
 
-
-
+/*
 module "ecs-service-consumer" {
   source = "../modules/ecs-service"
 
@@ -72,7 +71,8 @@ module "ecs-service-consumer" {
   container_port = var.consumer_container_port
   target_group = module.target-group-consumer.target_group
 
-  service_connect = false
+  service_connect = true
+  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
 module "target-group-consumer" {
@@ -90,4 +90,6 @@ module "target-group-consumer" {
   loadbalancer_arn = var.loadbalancer_arn
   listener_port = var.consumer_external_listener_port
   healthcheck_path = "/fhir/metadata"
+  container_port = var.consumer_container_port
 }
+*/
