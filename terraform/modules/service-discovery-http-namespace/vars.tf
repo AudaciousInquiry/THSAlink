@@ -9,3 +9,7 @@ variable "customer" {
 variable "project_code" {
   type = string
 }
+
+variable "vpc_id" {
+  type = string
+}

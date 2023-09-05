@@ -22,59 +22,7 @@ module "ecs-task-keycloak" {
     }
   ])
   container_environment = jsonencode([])
-  /*
-  container_environment = jsonencode([
-    {
-      name: "KC_HOSTNAME",
-      value: "thsa1.sanerproject.org"
-    },
-    {
-      name: "KC_DB",
-      value: "postgres"
-    },
-    {
-      name: "KC_DB_URL",
-      value: "jdbc:postgresql://thsa-db-cluster-1.cluster-c9ay9pkcn7ra.us-east-1.rds.amazonaws.com:5432/keycloak_20?ssl=true&sslmode=require"
-    },
-    {
-      name: "KC_DB_USERNAME",
-      value: "keycloak_20"
-    },
-    {
-      name: "KC_DB_PASSWORD",
-      value: "Frays8^Pronto^Obtrusive"
-    },
-    {
-      name: "KC_HTTPS_CERTIFICATE_FILE",
-      value: "/keycloak/EXP-2023-Sept-07.thsa1.sanerproject.org.crt.pem"
-    },
-    {
-      name: "KC_HTTPS_CERTIFICATE_KEY_FILE",
-      value: "/keycloak/EXP-2023-Sept-07.thsa1.sanerproject.org.key.pem"
-    },
 
-    {
-      name: "KC_HEALTH_ENABLED",
-      value: "true"
-    },
-    {
-      name: "KC_PROXY",
-      value: "passthrough"
-    },
-    {
-      name: "KC_HOSTNAME_ADMIN",
-      value: "thsa1.sanerproject.org"
-    },
-    {
-      name: "KC_HOSTNAME_PORT",
-      value: "12443"
-    },
-    {
-      name: "KC_HOSTNAME_STRICT",
-      value: "false"
-    }
-  ])
-  */
   mount_points = jsonencode([{
     sourceVolume: "configuration",
     containerPath: "/keycloak/",
@@ -126,6 +74,7 @@ module "ecs-service-keycloak" {
   target_group = module.target-group-keycloak.target_group
 
   service_connect = false
+  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
 module "target-group-keycloak" {
