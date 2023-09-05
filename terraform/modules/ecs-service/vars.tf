@@ -45,3 +45,7 @@ variable target_group {}
 variable service_connect {
   type = bool
 }
+
+variable "service_discovery_arn" {
+  type = string
+}
