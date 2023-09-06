@@ -50,7 +50,6 @@ module "ecs-task-datastore" {
   volume_root_directory = "/datastore"
 }
 
-/*
 module "ecs-service-datastore" {
   source = "../modules/ecs-service"
 
@@ -92,4 +91,3 @@ module "target-group-datastore" {
   healthcheck_path = "/fhir/metadata"
   container_port = var.datastore_container_port
 }
-*/

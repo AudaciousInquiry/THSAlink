@@ -50,7 +50,7 @@ module "ecs-task-consumer" {
   volume_root_directory = "/consumer"
 }
 
-/*
+
 module "ecs-service-consumer" {
   source = "../modules/ecs-service"
 
@@ -80,16 +80,15 @@ module "target-group-consumer" {
 
   application_code = "consumer"
 
-  environment = var.environment
-  customer = var.customer
+  environment  = var.environment
+  customer     = var.customer
   project_code = var.project_code
 
   vpc_id = var.vpc_id
 
-  certificate_arn = var.certificate_arn
+  certificate_arn  = var.certificate_arn
   loadbalancer_arn = var.loadbalancer_arn
-  listener_port = var.consumer_external_listener_port
+  listener_port    = var.consumer_external_listener_port
   healthcheck_path = "/fhir/metadata"
-  container_port = var.consumer_container_port
+  container_port   = var.consumer_container_port
 }
-*/

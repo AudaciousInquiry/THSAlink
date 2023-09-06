@@ -64,6 +64,7 @@ module "ecs-service-web" {
   target_group = module.target-group-web.target_group
 
   service_connect = false
+  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
 module "target-group-web" {
@@ -81,4 +82,5 @@ module "target-group-web" {
   loadbalancer_arn = var.loadbalancer_arn
   listener_port = var.web_external_listener_port
   healthcheck_path = "/"
+  container_port = var.web_container_port
 }
