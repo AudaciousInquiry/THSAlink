@@ -49,7 +49,6 @@ module "ecs-task-cqf" {
   volume_filesystem_id  = ""
 }
 
-/*
 module "ecs-service-cqf" {
   source = "../modules/ecs-service"
 
@@ -91,4 +90,3 @@ module "target-group-cqf" {
   healthcheck_path = "/fhir/metadata"
   container_port = var.cqf_container_port
 }
-*/
