@@ -4,7 +4,7 @@ locals {
   datastore_port = "9442" // aka "hapi" original = 9442
   keycloak_port = "8443" // original = 8443
   cqf_port = "9443" // original = 9443
-  web_port = "443" // original =
+  web_port = "11443" // original = 443
 }
 /*
  TARGET GROUP - START
