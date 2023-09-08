@@ -78,7 +78,7 @@ module "target-group-web" {
 
   vpc_id = var.vpc_id
 
-  certificate_arn = var.certificate_arn
+  certificate_arn = data.terraform_remote_state.infra.outputs.application_certificate_arn
   loadbalancer_arn = var.loadbalancer_arn
   listener_port = var.web_external_listener_port
   healthcheck_path = "/"

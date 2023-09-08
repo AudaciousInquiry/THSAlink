@@ -11,6 +11,8 @@ resource "aws_ecs_cluster" "ecs_cluster" {
             logging = "DEFAULT"
         }
     }
-
-
+    tags = {
+        Environment = var.environment,
+        CreatedBy = "terraform"
+    }
 }

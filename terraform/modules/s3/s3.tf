@@ -7,6 +7,8 @@ resource "aws_s3_bucket" "s3-bucket" {
   tags = {
     Description = var.resource_description
     Owner = var.resource_owner
+    Environment = var.environment,
+    CreatedBy = "terraform"
   }
 }
 
