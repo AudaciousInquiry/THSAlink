@@ -33,3 +33,5 @@ docker-volumes/
 Writerside/*
 Writerside/images/*
 Writerside/topics/*
+
+**/.aws-sam
