@@ -42,6 +42,11 @@ resource "aws_lb_target_group" "tfer--thsa-dashboard" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-link-api" {
@@ -56,6 +61,7 @@ resource "aws_lb_target_group" "tfer--thsa-link-api" {
     protocol            = "TCP"
     timeout             = "10"
     unhealthy_threshold = "3"
+
   }
 
   ip_address_type                   = "ipv4"
@@ -74,6 +80,11 @@ resource "aws_lb_target_group" "tfer--thsa-link-api" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-link-consumer" {
@@ -106,6 +117,11 @@ resource "aws_lb_target_group" "tfer--thsa-link-consumer" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-link-cqf" {
@@ -138,6 +154,11 @@ resource "aws_lb_target_group" "tfer--thsa-link-cqf" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-link-hapi" {
@@ -170,6 +191,11 @@ resource "aws_lb_target_group" "tfer--thsa-link-hapi" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-link-keycloak" {
@@ -202,6 +228,11 @@ resource "aws_lb_target_group" "tfer--thsa-link-keycloak" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-link-web" {
@@ -234,6 +265,11 @@ resource "aws_lb_target_group" "tfer--thsa-link-web" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_target_group" "tfer--thsa-saner-app-group" {
@@ -266,6 +302,11 @@ resource "aws_lb_target_group" "tfer--thsa-saner-app-group" {
 
   target_type = "instance"
   vpc_id      = var.vpc_id
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 /*
  TARGET GROUP - END
@@ -288,6 +329,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
@@ -302,6 +348,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
   port              = local.consumer_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
@@ -316,6 +367,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
   port              = local.datastore_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
@@ -330,6 +386,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
   port              = local.keycloak_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
@@ -344,6 +405,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
   port              = local.api_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
@@ -358,6 +424,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
   port              = local.cqf_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
@@ -372,6 +443,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
   port              = local.web_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 /*
  LOAD BALANCER LISTENER - END
@@ -395,6 +471,11 @@ resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule1" {
 
   listener_arn = aws_lb_listener.tfer--aws_lb_listener--thsa-dashboard.arn
   priority     = "1"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule2" {
@@ -412,6 +493,11 @@ resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule2" {
 
   listener_arn = aws_lb_listener.tfer--aws_lb_listener--thsa-dashboard.arn
   priority     = "2"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 /*
  LISTENER RULES - END

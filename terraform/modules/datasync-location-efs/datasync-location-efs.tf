@@ -5,4 +5,9 @@ resource "aws_datasync_location_efs" "datasync-location-efs" {
     security_group_arns = var.security_groups_arns
     subnet_arn = element(var.subnets_arns, 1)
   }
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
