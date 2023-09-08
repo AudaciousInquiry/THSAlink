@@ -50,7 +50,6 @@ module "ecs-task-consumer" {
   volume_root_directory = "/consumer"
 }
 
-
 module "ecs-service-consumer" {
   source = "../modules/ecs-service"
 
