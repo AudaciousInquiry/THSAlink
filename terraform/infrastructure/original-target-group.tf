@@ -2,7 +2,7 @@ locals {
   api_port = "9440" // original = 9440
   consumer_port = "9441" // original = 9441
   datastore_port = "9442" // aka "hapi" original = 9442
-  keycloak_port = "8443" // original = 8443
+  keycloak_port = "12443" // original = 8443
   cqf_port = "9443" // original = 9443
   web_port = "11443" // original = 443
 }
@@ -375,7 +375,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-keycloak.arn
