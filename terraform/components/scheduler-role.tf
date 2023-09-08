@@ -54,4 +54,8 @@ resource "aws_iam_role" "scheduler-role" {
       ]
     })
   }
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }

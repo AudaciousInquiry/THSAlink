@@ -31,6 +31,11 @@ resource "aws_lb" "loadbalancer--thsa-alb" {
 
   subnets                    = ["subnet-033c5cc1aaf9bfb48", "subnet-0b58d2d8114684fe9"]
   xff_header_processing_mode = "append"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 // Load Balancer for EC2 server running API applications.
@@ -48,6 +53,11 @@ resource "aws_lb" "loadbalancer--thsa-app-lb" {
   }
 
   subnets = ["subnet-033c5cc1aaf9bfb48"]
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 /*

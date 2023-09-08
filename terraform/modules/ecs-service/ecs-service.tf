@@ -55,4 +55,8 @@ resource "aws_ecs_service" "ecs_service" {
             }
         }
     }
+    tags = {
+        Environment = var.environment,
+        CreatedBy = "terraform"
+    }
 }

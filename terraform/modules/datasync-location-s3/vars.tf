@@ -5,3 +5,7 @@ variable "subdirectory" {
 }
 
 variable "access_role" {}
+
+variable "environment" {
+  type = string
+}

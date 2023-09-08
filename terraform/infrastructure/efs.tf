@@ -1,6 +1,7 @@
 module "ecs-configuration-efs" {
   source = "../modules/efs-file-system"
   name   = "${var.environment}-${var.customer}-${var.project_code}-ecs-configuration"
+  environment = var.environment
 }
 
 module "ecs-configuraton-mount-target" {
