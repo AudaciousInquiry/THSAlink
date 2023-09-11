@@ -1,16 +1,18 @@
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.config.auth.LinkOAuthConfig;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.json.JSONObject;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
+
 public class ExpungeData implements RequestHandler<Void,String> {
     @Override
     public String handleRequest(Void unused, Context context) {
@@ -19,12 +21,14 @@ public class ExpungeData implements RequestHandler<Void,String> {
         String returnValue = "";
 
         // TODO - secret name & region from ENV
-        String secretName = "expunge-data-testing";
-        Region region = Region.of("us-east-1");
+        String secretName = System.getenv("SECRET_NAME"); // "expunge-data-testing";
+        Region region = Region.of(System.getenv("AWS_REGION")); // "us-east-1"
+        String expungeApiUrl = System.getenv("EXPUNGE_API_URL"); // "https://thsa1.sanerproject.org:10440/api/data/expunge";
 
         // Create a Secrets Manager client
         SecretsManagerClient client = SecretsManagerClient.builder()
                 .region(region)
+                .httpClient(ApacheHttpClient.create())
                 .build();
 
         GetSecretValueRequest getSecretValueRequest = GetSecretValueRequest.builder()
@@ -54,9 +58,6 @@ public class ExpungeData implements RequestHandler<Void,String> {
         authConfig.setPassword(secretObject.getString("password"));
         authConfig.setScope(secretObject.getString("scope"));
         authConfig.setCredentialMode(secretObject.getString("credential-mode"));
-
-        // TODO - this URL from env
-        String expungeApiUrl = "https://thsa1.sanerproject.org:10440/api/data/expunge";
 
         try {
             String token = OAuth2Helper.getToken(authConfig);
