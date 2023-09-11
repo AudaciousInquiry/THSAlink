@@ -54,6 +54,25 @@ resource "aws_iam_role" "scheduler-role" {
       ]
     })
   }
+
+  inline_policy {
+    name = "${var.environment}-${var.customer}-${var.project_code}-RunLambda"
+    policy = jsonencode({
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "lambda:InvokeFunction"
+          ],
+          "Resource": [
+            "arn:aws:lambda:us-east-1:${var.aws_account}:function:${aws_lambda_function.expunge-data.function_name}:*",
+            "arn:aws:lambda:us-east-1:${var.aws_account}:function:${aws_lambda_function.expunge-data.function_name}"
+          ]
+        }
+      ]
+    })
+  }
   tags = {
     Environment = var.environment,
     CreatedBy = "terraform"
