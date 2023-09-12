@@ -71,6 +71,10 @@ resource "aws_iam_role" "iam-role" {
       ]
     })
   }
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "role-policy-attachment" {

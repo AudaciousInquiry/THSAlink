@@ -48,5 +48,8 @@ resource "aws_ecs_task_definition" "ecs_task_cli" {
       }
     }
   }
-
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }

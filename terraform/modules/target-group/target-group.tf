@@ -42,6 +42,10 @@ resource "aws_lb_target_group" "target-group" {
 
   target_type = "ip"
   vpc_id = var.vpc_id
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }
 
 resource "aws_lb_listener" "lb-listener" {
@@ -57,4 +61,9 @@ resource "aws_lb_listener" "lb-listener" {
   port              = var.listener_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }

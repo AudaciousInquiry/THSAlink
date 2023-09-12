@@ -6,4 +6,9 @@ resource "aws_datasync_location_s3" "datasync-location-s3" {
     bucket_access_role_arn = var.access_role.arn
   }
 
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
+
 }

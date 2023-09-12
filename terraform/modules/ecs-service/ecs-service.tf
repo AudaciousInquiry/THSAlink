@@ -37,6 +37,11 @@ resource "aws_ecs_service" "ecs_service" {
         }
     }
 
+    service_registries {
+        registry_arn = var.service_discovery_arn
+        container_name = "${var.environment}-${var.customer}-${var.project_code}-${var.application_code}"
+    }
+
     dynamic "service_connect_configuration" {
         for_each = var.service_connect != false ? [1] : []
         content {
@@ -49,5 +54,9 @@ resource "aws_ecs_service" "ecs_service" {
                 }
             }
         }
+    }
+    tags = {
+        Environment = var.environment,
+        CreatedBy = "terraform"
     }
 }

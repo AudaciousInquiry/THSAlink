@@ -19,6 +19,9 @@ module "ecs-task-api" {
   container_environment = jsonencode([{
     name: "SPRING_CONFIG_LOCATION",
     value: "/api/api-config.yml"
+  },{
+    name: "api.data-store.base-url",
+    value: "http://dev-thsa-link-datastore-tcp.dev-thsa-link:8080/fhir"
   }])
   mount_points = jsonencode([{
     sourceVolume: "configuration",
@@ -70,7 +73,8 @@ module "ecs-service-api" {
   container_port = var.api_container_port
   target_group = module.target-group-api.target_group
 
-  service_connect = false
+  service_connect = true
+  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
 module "target-group-api" {
@@ -78,15 +82,15 @@ module "target-group-api" {
 
   application_code = "api"
 
-  environment = var.environment
-  customer = var.customer
+  environment  = var.environment
+  customer     = var.customer
   project_code = var.project_code
 
   vpc_id = var.vpc_id
 
-  certificate_arn = var.certificate_arn
+  certificate_arn  = data.terraform_remote_state.infra.outputs.application_certificate_arn
   loadbalancer_arn = var.loadbalancer_arn
-  listener_port = var.api_external_listener_port
+  listener_port    = var.api_external_listener_port
   healthcheck_path = "/fhir/metadata"
-
+  container_port   = var.api_container_port
 }
