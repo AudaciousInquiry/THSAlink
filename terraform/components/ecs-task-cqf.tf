@@ -69,7 +69,8 @@ module "ecs-service-cqf" {
   container_port = var.cqf_container_port
   target_group = module.target-group-cqf.target_group
 
-  service_connect = false
+  service_connect = true
+  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
 module "target-group-cqf" {
@@ -83,9 +84,9 @@ module "target-group-cqf" {
 
   vpc_id = var.vpc_id
 
-  certificate_arn = var.certificate_arn
+  certificate_arn = data.terraform_remote_state.infra.outputs.application_certificate_arn
   loadbalancer_arn = var.loadbalancer_arn
   listener_port = var.cqf_external_listener_port
   healthcheck_path = "/fhir/metadata"
-
+  container_port = var.cqf_container_port
 }

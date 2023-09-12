@@ -18,6 +18,13 @@ module "ecs-task-expunge-data" {
   container_environment_file = jsonencode([])
   container_environment = jsonencode([])
 
+  /*
+  {
+    name: "cli.expunge-data.api-url",
+    value: "http://10.90.90.45:8080/api"
+  }
+  */
+
   cpu_size = var.default_cpu_size
   memory_size = var.default_memory_size
 
@@ -40,7 +47,7 @@ resource "aws_scheduler_schedule" "expunge-data-schedule" {
     mode = "OFF"
   }
 
-  schedule_expression = "rate(30 minutes)"
+  schedule_expression = "rate(45 minutes)"
 
   target {
     arn      = data.terraform_remote_state.infra.outputs.ecs_cluster_arn
