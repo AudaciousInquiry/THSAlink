@@ -36,6 +36,14 @@ variable "subnets" {
     type = list(string)
 }
 
+variable "legacy_link_ec2_server" {
+    type = string
+}
+
+variable "legacy_esri_ec2_server" {
+    type = string
+}
+
 // Needed to create DataSync EFS Location
 variable "subnets_arns" {
     type = list(string)
@@ -116,7 +124,3 @@ variable "cqf_container_port" {
 variable "cqf_external_listener_port" {
     type = string
 }
-
-# ****************************************************
-# CQF - Service
-# ****************************************************

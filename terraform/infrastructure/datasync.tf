@@ -13,6 +13,7 @@ module "datasync-location-s3" {
   access_role = aws_iam_role.iam-role
   s3_bucket = module.ecs-configuration-s3.s3_bucket
   subdirectory = "/"
+  environment = var.environment
 }
 
 module "datasync-location-efs" {
@@ -23,11 +24,13 @@ module "datasync-location-efs" {
   efs-filesystem = module.ecs-configuration-efs.file-system
   security_groups_arns = var.security_groups_arns
   subnets_arns = var.subnets_arns
+  environment = var.environment
 }
 
 module "datasync-log-group" {
   source = "../modules/cloudwatch-log-group"
   name = "${var.environment}-${var.customer}-${var.project_code}-datasync-cloudwatch-log-group"
+  environment = var.environment
 }
 
 module "configuration-sync-task" {
@@ -36,6 +39,7 @@ module "configuration-sync-task" {
   log_group = module.datasync-log-group.group
   name = "${var.environment}-${var.customer}-${var.project_code}-datasync-task"
   source_location = module.datasync-location-s3.location
+  environment = var.environment
 }
 
 /*

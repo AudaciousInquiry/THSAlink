@@ -12,4 +12,8 @@ resource "aws_datasync_task" "datasync-task" {
   schedule {
     schedule_expression = "rate(1 day)"
   }
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
 }

@@ -21,3 +21,15 @@ output "cqf-environment-file" {
 output "keycloak-environment-file" {
   value = module.keycloak-environment-file.s3-file
 }
+
+output "discovery_service_arn" {
+  value = module.service-discover-namespace.discovery_service_arn
+}
+
+output "application_certificate_arn" {
+  value = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+}
+
+output "lambda_deploy_bucket" {
+  value = module.lambda-deploy-s3.s3_bucket
+}

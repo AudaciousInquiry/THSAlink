@@ -13,3 +13,7 @@ variable "name" {
 variable "log_group" {
   type = any
 }
+
+variable "environment" {
+  type = string
+}

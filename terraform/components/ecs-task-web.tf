@@ -1,7 +1,7 @@
-module "ecs-task-consumer" {
+module "ecs-task-web" {
   source = "../modules/ecs-task"
 
-  application_code = "consumer"
+  application_code = "web"
 
   aws_region = var.aws_region
   aws_profile = var.aws_profile
@@ -11,33 +11,26 @@ module "ecs-task-consumer" {
 
   # TFVARS
   image_repository = var.docker_image_repository
-  image_name = var.consumer_docker_image_name
-  image_tag = var.consumer_docker_tag
+  image_name = var.web_docker_image_name
+  image_tag = var.web_docker_tag
   ecs_task_role = data.terraform_remote_state.infra.outputs.iam-role-arn
 
   container_environment_file = jsonencode([])
-  container_environment = jsonencode([{
-    name: "SPRING_CONFIG_LOCATION",
-    value: "/consumer/consumer-config.yml"
-  }])
+  container_environment = jsonencode([])
   mount_points = jsonencode([{
     sourceVolume: "configuration",
-    containerPath: "/consumer/",
+    containerPath: "/usr/share/nginx/html/assets/configuration/",
     readOnly: false
   }])
 
-  cpu_size = var.consumer_cpu_size
-  memory_size = var.consumer_memory_size
-  container_port = var.consumer_container_port
+  cpu_size = var.web_cpu_size
+  memory_size = var.web_memory_size
+  container_port = var.web_container_port
 
   healthcheck = jsonencode({
     "command": [
-      "CMD",
-      "nc",
-      "-vz",
-      "-w1",
-      "localhost",
-      tostring(var.consumer_container_port)
+      "CMD-SHELL",
+      "curl -f http://localhost:${tostring(var.web_container_port)}/ || exit 1"
     ],
     "interval": 30,
     "timeout": 10,
@@ -47,15 +40,13 @@ module "ecs-task-consumer" {
 
   volume_filesystem_id = data.terraform_remote_state.infra.outputs.file-system.id
   volume_name = "configuration"
-  volume_root_directory = "/consumer"
+  volume_root_directory = "/web"
 }
 
-
-
-module "ecs-service-consumer" {
+module "ecs-service-web" {
   source = "../modules/ecs-service"
 
-  application_code = "consumer"
+  application_code = "web"
 
   aws_region = var.aws_region
   aws_profile = var.aws_profile
@@ -67,18 +58,19 @@ module "ecs-service-consumer" {
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
-  ecs_task_cqf_arn = module.ecs-task-consumer.arn
+  ecs_task_cqf_arn = module.ecs-task-web.arn
 
-  container_port = var.consumer_container_port
-  target_group = module.target-group-consumer.target_group
+  container_port = var.web_container_port
+  target_group = module.target-group-web.target_group
 
   service_connect = false
+  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
-module "target-group-consumer" {
+module "target-group-web" {
   source = "../modules/target-group"
 
-  application_code = "consumer"
+  application_code = "web"
 
   environment = var.environment
   customer = var.customer
@@ -86,8 +78,9 @@ module "target-group-consumer" {
 
   vpc_id = var.vpc_id
 
-  certificate_arn = var.certificate_arn
+  certificate_arn = data.terraform_remote_state.infra.outputs.application_certificate_arn
   loadbalancer_arn = var.loadbalancer_arn
-  listener_port = var.consumer_external_listener_port
-  healthcheck_path = "/fhir/metadata"
+  listener_port = var.web_external_listener_port
+  healthcheck_path = "/"
+  container_port = var.web_container_port
 }

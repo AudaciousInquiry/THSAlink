@@ -7,3 +7,7 @@ variable file-name {
 variable file-path {
   type = string
 }
+
+variable environment {
+  type = string
+}
