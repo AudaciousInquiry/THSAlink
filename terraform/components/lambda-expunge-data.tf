@@ -13,8 +13,8 @@ resource "aws_secretsmanager_secret_version" "expunge-data" {
 
 module "expunge-data-jar" {
   source = "../modules/s3-file"
-  file-name = "ExpungeData-0.0.1.jar"
-  file-path = "../../lambda/ExpungeData/target/"
+  file-name = "link-lambda-0.0.1.jar"
+  file-path = "../../link-lambda/target/"
   s3-bucket = data.terraform_remote_state.infra.outputs.lambda_deploy_bucket
   environment = var.environment
 }
@@ -150,6 +150,8 @@ resource "aws_lambda_function" "expunge-data" {
   }
 }
 
+/*
+// reverting to ECS task to test something....
 resource "aws_scheduler_schedule" "expunge-data" {
   name = "${var.environment}-${var.customer}-${var.project_code}-expunge-data-lambda"
   group_name = "default"
@@ -167,9 +169,11 @@ resource "aws_scheduler_schedule" "expunge-data" {
   }
 }
 
+
 resource "aws_lambda_permission" "expunge-data" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.expunge-data.function_name
   principal     = "events.amazonaws.com"
   source_arn = aws_scheduler_schedule.expunge-data.arn
 }
+*/
