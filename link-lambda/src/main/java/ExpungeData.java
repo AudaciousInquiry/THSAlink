@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 public class ExpungeData implements RequestHandler<Void,String> {
+
     @Override
     public String handleRequest(Void unused, Context context) {
         LambdaLogger logger = context.getLogger();
