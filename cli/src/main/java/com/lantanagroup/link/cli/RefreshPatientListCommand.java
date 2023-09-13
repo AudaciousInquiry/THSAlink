@@ -14,6 +14,8 @@ import com.lantanagroup.link.config.query.QueryConfig;
 import com.lantanagroup.link.query.auth.EpicAuth;
 import com.lantanagroup.link.query.auth.EpicAuthConfig;
 import com.lantanagroup.link.query.auth.HapiFhirAuthenticationInterceptor;
+import com.lantanagroup.link.tasks.config.CensusReportingPeriods;
+import com.lantanagroup.link.tasks.config.RefreshPatientListConfig;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -130,7 +132,7 @@ public class RefreshPatientListCommand extends BaseShellCommand {
   }
 
   private void updateList(ListResource target) throws Exception {
-    String url = String.format("%s/poi/fhir/List", config.getApiUrl());
+    String url = String.format("%s/poi/fhir/PatientList", config.getApiUrl());
     logger.info("Submitting to {}", url);
     HttpPost request = new HttpPost(url);
     if (config.getAuth() != null && config.getAuth().getCredentialMode() != null) {

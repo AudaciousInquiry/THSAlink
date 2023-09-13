@@ -1,6 +1,6 @@
 package com.lantanagroup.link.cli;
 
-public enum CensusReportingPeriods {
+public enum OldCensusReportingPeriods {
   Day,
   Month
 }
