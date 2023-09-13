@@ -4,10 +4,12 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.shell.Shell;
 
 @SpringBootApplication
+@ComponentScan(basePackages = { "com.lantanagroup.link.cli","com.lantanagroup.link.tasks" })
 public class ShellApplication {
 
   public static void main(String[] args) {
