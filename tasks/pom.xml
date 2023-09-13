@@ -37,5 +37,11 @@
             <scope>compile</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lantanagroup.link</groupId>
+            <artifactId>query</artifactId>
+            <scope>compile</scope>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

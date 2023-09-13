@@ -18,9 +18,9 @@ import java.util.List;
 @Setter
 @Validated
 @Configuration
-@ConfigurationProperties(prefix = "cli.refresh-patient-list")
+//@ConfigurationProperties(prefix = "cli.xrefresh-patient-list")
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
-public class RefreshPatientListConfig {
+public class OldRefreshPatientListConfig {
   @NotBlank
   private String apiUrl;
   @NotBlank
@@ -29,7 +29,7 @@ public class RefreshPatientListConfig {
   @NotNull
   @Size(min = 1)
   private List<PatientList> patientList;
-  private CensusReportingPeriods censusReportingPeriod;
+  private OldCensusReportingPeriods censusReportingPeriod;
 
   @Getter
   @Setter
