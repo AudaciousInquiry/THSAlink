@@ -39,6 +39,7 @@ module "ecs-task-expunge-data" {
   volume_root_directory = "/cli"
 }
 
+/*
 resource "aws_scheduler_schedule" "expunge-data-schedule" {
   name = "${var.environment}-${var.customer}-${var.project_code}-expunge-data"
   group_name = "default"
@@ -67,3 +68,4 @@ resource "aws_scheduler_schedule" "expunge-data-schedule" {
     }
   }
 }
+*/
