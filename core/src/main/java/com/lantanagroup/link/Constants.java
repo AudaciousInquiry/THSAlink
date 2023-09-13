@@ -47,4 +47,5 @@ public class Constants {
   public static final String LinkUser = "link-user";
   public static final Coding EXPUNGE_TASK = new Coding().setCode("EXPUNGEDATA").setSystem("https://nhsnlink.org").setDisplay("Expunge Data Task");
   public static final Coding MANUAL_EXPUNGE = new Coding().setCode("MANUALEXPUNGE").setSystem("https://nhsnlink.org").setDisplay("Manual Expunge Task");
+  public static final Coding REFRESH_PATIENT_LIST = new Coding().setCode("REFRESHPATIENTLIST").setSystem("https://nhsnlink.org").setDisplay("Refresh Patient List Task");
 }

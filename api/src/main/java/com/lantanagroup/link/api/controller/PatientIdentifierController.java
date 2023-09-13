@@ -1,8 +1,10 @@
 package com.lantanagroup.link.api.controller;
 
+import ca.uhn.fhir.parser.IParser;
 import com.google.common.annotations.VisibleForTesting;
 import com.lantanagroup.link.*;
 import com.lantanagroup.link.Constants;
+import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.model.CsvEntry;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -12,27 +14,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.annotation.PreDestroy;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
- * Reportability Response Controller
+ * Reportable Response Controller
  */
 @RestController
 @RequestMapping("/api/poi")
 public class PatientIdentifierController extends BaseController {
+  private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private static final Logger logger = LoggerFactory.getLogger(PatientIdentifierController.class);
+
+  @PreDestroy
+  public void shutdown() {
+    // needed to avoid resource leak
+    executor.shutdown();
+  }
 
   /**
    * Posts a csv file with Patient Identifiers and Dates to the Fhir server.
@@ -83,9 +94,65 @@ public class PatientIdentifierController extends BaseController {
     this.receiveFHIR(list);
   }
 
+  @PostMapping(value = "/fhir/PatientList", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+  public ResponseEntity<?> getPatientIdentifierList(
+          @AuthenticationPrincipal LinkCredentials user,
+          @RequestBody() String body,
+          @RequestHeader("Content-Type") String contentType
+  ) {
+
+    Task response = TaskHelper.getNewTask(user, Constants.REFRESH_PATIENT_LIST);
+    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    fhirDataProvider.updateResource(response);
+
+    executor.submit(() -> processPatientIdentifierListTask(body, contentType, response.getId()));
+
+    return ResponseEntity.ok(response);
+  }
+
+  private void processPatientIdentifierListTask(String receivedBody, String receivedType, String taskId) {
+
+    // Get the task so that it can be updated later
+    FhirDataProvider dataProvider = getFhirDataProvider();
+    Task task = dataProvider.getTaskById(taskId);
+
+    try {
+      logger.info("Patient List Processing Started (Task ID: {})", taskId);
+
+      IParser parser;
+      if (receivedType.equals(MediaType.APPLICATION_JSON_VALUE)) {
+        parser = ctx.newJsonParser();
+      } else if (receivedType.equals(MediaType.APPLICATION_XML_VALUE)) {
+        parser = ctx.newXmlParser();
+      } else {
+        throw new Exception("Received payload isn't JSON or XML");
+      }
+
+      ListResource list = parser.parseResource(ListResource.class, receivedBody);
+      checkMeasureIdentifier(list);
+      receiveFHIR(list);
+
+      logger.info("Patient List Processing Complete (Task ID: {})", taskId);
+
+      task.setStatus(Task.TaskStatus.COMPLETED);
+      Annotation note = new Annotation();
+      note.setText(String.format("Patient List with %s entries has been stored.", list.getEntry().size()));
+      task.addNote(note);
+
+    } catch (Exception ex) {
+      logger.error("Patient List Processing Issue: {} (Task ID: {})", ex.getMessage(), taskId);
+      Annotation note = new Annotation();
+      note.setText(String.format("Issue With Patient List Processing: %s", ex.getMessage()));
+      task.setNote(List.of(note));
+      task.setStatus(Task.TaskStatus.FAILED);
+    } finally {
+      task.setLastModified(new Date());
+      dataProvider.updateResource(task);
+    }
+  }
 
   private void checkMeasureIdentifier(ListResource list) {
-    if (list.getIdentifier().size() < 1) {
+    if (list.getIdentifier().isEmpty()) {
       String msg = "Census list should have an identifier.";
       logger.error(msg);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
@@ -214,7 +281,7 @@ public class PatientIdentifierController extends BaseController {
       String end = Helper.getFhirDate(LocalDateTime.of(endDate.getYear(), endDate.getMonth() + 1, endDate.getDay(), endDate.getHour(), endDate.getMinute(), endDate.getSecond()));
       Bundle bundle = this.getFhirDataProvider().findListByIdentifierAndDate(system, value, start, end);
 
-      if (bundle.getEntry().size() == 0) {
+      if (bundle.getEntry().isEmpty()) {
         applicablePeriod.setStartElement(new DateTimeType(start));
         applicablePeriod.setEndElement(new DateTimeType(end));
         this.getFhirDataProvider().createResource(list);

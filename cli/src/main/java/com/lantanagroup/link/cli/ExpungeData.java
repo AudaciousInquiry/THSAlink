@@ -1,10 +1,14 @@
 package com.lantanagroup.link.cli;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.lantanagroup.link.auth.OAuth2Helper;
+import com.lantanagroup.link.cli.helpers.HttpExecutor;
+import com.lantanagroup.link.cli.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.cli.tasks.ExpungeDataTask;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
+import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.standard.ShellComponent;
@@ -18,33 +22,13 @@ public class ExpungeData extends BaseShellCommand {
             key = "expunge-data",
             value = "Call API expunge function to clear data")
     public void execute() {
-        ExpungeDataConfig config = applicationContext.getBean(ExpungeDataConfig.class);
-
-        if (!ValidConfiguration(config)) {
-            logger.error("Issue with expunge-data configuration...");
-            System.exit(1);
-        }
-
-        String url = config.getApiUrl() + "/data/expunge";
-        logger.info("Calling API Expunge Data at {}", url);
 
         try {
-            String token = OAuth2Helper.getToken(config.getAuth());
-            if (token == null) {
-                throw new Exception("Authorization failed");
-            }
-            HttpDelete request = new HttpDelete(url);
-            request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token));
-
-            HttpResponse response = Utility.HttpExecuter(request, logger);
-            logger.info("HTTP Response Code {}", response.getStatusLine().getStatusCode());
-
+            ExpungeDataConfig config = applicationContext.getBean(ExpungeDataConfig.class);
+            ExpungeDataTask.RunExpungeDataTask(config);
         } catch (Exception ex) {
-            logger.error("Error calling API Expunge Data - {}", ex.getMessage());
             System.exit(1);
         }
-
-        logger.info("Expunge Data Call Complete");
 
         System.exit(0);
 
