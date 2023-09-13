@@ -1,14 +1,8 @@
 package com.lantanagroup.link.cli;
 
-import ca.uhn.fhir.context.FhirContext;
-import com.lantanagroup.link.auth.OAuth2Helper;
-import com.lantanagroup.link.cli.helpers.HttpExecutor;
-import com.lantanagroup.link.cli.helpers.HttpExecutorResponse;
-import com.lantanagroup.link.cli.tasks.ExpungeDataTask;
+import com.lantanagroup.link.tasks.ExpungeDataTask;
+import com.lantanagroup.link.tasks.config.ExpungeDataConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpDelete;
-import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.standard.ShellComponent;

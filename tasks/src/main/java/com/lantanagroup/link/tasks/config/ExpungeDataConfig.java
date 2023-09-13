@@ -1,4 +1,4 @@
-package com.lantanagroup.link.cli;
+package com.lantanagroup.link.tasks.config;
 
 import com.lantanagroup.link.config.auth.LinkOAuthConfig;
 import lombok.Getter;
