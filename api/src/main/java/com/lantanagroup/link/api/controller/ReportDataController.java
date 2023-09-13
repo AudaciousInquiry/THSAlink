@@ -1,9 +1,7 @@
 package com.lantanagroup.link.api.controller;
 
+import com.lantanagroup.link.*;
 import com.lantanagroup.link.Constants;
-import com.lantanagroup.link.FhirDataProvider;
-import com.lantanagroup.link.FhirHelper;
-import com.lantanagroup.link.IDataProcessor;
 import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.config.datagovernance.DataGovernanceConfig;
 import com.lantanagroup.link.config.query.USCoreConfig;
@@ -149,7 +147,7 @@ public class ReportDataController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 
-    Task responseTask = getNewTask(user, Constants.MANUAL_EXPUNGE);
+    Task responseTask = TaskHelper.getNewTask(user, Constants.MANUAL_EXPUNGE);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
     fhirDataProvider.updateResource(responseTask);
 
@@ -176,7 +174,7 @@ public class ReportDataController extends BaseController {
     return ResponseEntity.ok(responseTask);
   }
 
-  public void expungeData(LinkCredentials user, HttpServletRequest request, String taskId) {
+  private void expungeData(LinkCredentials user, HttpServletRequest request, String taskId) {
 
     logger.info("Data Expunge Started (Task ID: {})", taskId);
 
@@ -266,31 +264,13 @@ public class ReportDataController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User does not have proper role to expunge data.");
     }
 
-    Task responseTask = getNewTask(user, Constants.EXPUNGE_TASK);
+    Task responseTask = TaskHelper.getNewTask(user, Constants.EXPUNGE_TASK);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
     fhirDataProvider.updateResource(responseTask);
 
     executor.submit(() -> expungeData(user, request, responseTask.getId()));
 
     return ResponseEntity.ok(responseTask);
-  }
-
-  private static Task getNewTask(LinkCredentials user, Coding taskType) {
-    Task responseTask = new Task();
-    responseTask.setId(UUID.randomUUID().toString());
-    responseTask.setStatus(Task.TaskStatus.INPROGRESS);
-    responseTask.setIntent(Task.TaskIntent.UNKNOWN);
-    responseTask.setPriority(Task.TaskPriority.ROUTINE);
-    responseTask.setAuthoredOn(new Date());
-    responseTask.setLastModified(new Date());
-
-    Reference callingUser = new Reference();
-    callingUser.setReference(String.format("Practitioner/%s", user.getPractitioner().getIdentifier().get(0).getValue()));
-    responseTask.setRequester(callingUser);
-
-    responseTask.getMeta().addTag(taskType);
-
-    return responseTask;
   }
 
   /**
