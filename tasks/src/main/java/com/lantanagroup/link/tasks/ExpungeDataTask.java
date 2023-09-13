@@ -1,17 +1,16 @@
-package com.lantanagroup.link.cli.tasks;
+package com.lantanagroup.link.tasks;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.lantanagroup.link.auth.OAuth2Helper;
-import com.lantanagroup.link.cli.ExpungeDataConfig;
-import com.lantanagroup.link.cli.helpers.HttpExecutor;
-import com.lantanagroup.link.cli.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.tasks.config.ExpungeDataConfig;
+import com.lantanagroup.link.tasks.helpers.HttpExecutor;
+import com.lantanagroup.link.tasks.helpers.HttpExecutorResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpDelete;
 import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 public class ExpungeDataTask {
     private static final Logger logger = LoggerFactory.getLogger(ExpungeDataTask.class);
@@ -34,7 +33,7 @@ public class ExpungeDataTask {
             HttpDelete request = new HttpDelete(url);
             request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token));
 
-            HttpExecutorResponse response = HttpExecutor.HttpExecutor(request,logger); //Utility.HttpExecuter(request, logger);
+            HttpExecutorResponse response = HttpExecutor.HttpExecutor(request,logger);
             logger.info("HTTP Response Code {}", response.getResponseCode());
 
             if (response.getResponseCode() != 200) {

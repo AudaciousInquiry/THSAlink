@@ -40,6 +40,7 @@
         <module>nhsn</module>
         <module>mhl</module>
         <module>link-lambda</module>
+        <module>tasks</module>
     </modules>
 
     <dependencies>
