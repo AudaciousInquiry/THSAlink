@@ -150,8 +150,6 @@ resource "aws_lambda_function" "expunge-data" {
   }
 }
 
-/*
-// reverting to ECS task to test something....
 resource "aws_scheduler_schedule" "expunge-data" {
   name = "${var.environment}-${var.customer}-${var.project_code}-expunge-data-lambda"
   group_name = "default"
@@ -176,4 +174,3 @@ resource "aws_lambda_permission" "expunge-data" {
   principal     = "events.amazonaws.com"
   source_arn = aws_scheduler_schedule.expunge-data.arn
 }
-*/

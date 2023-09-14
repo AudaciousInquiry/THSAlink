@@ -103,6 +103,7 @@ public class ReportDataControllerTest {
     LinkCredentials user = Mockito.mock(LinkCredentials.class);
     try {
       reportDataController.expungeSpecificData(user, mockedRequest);
+      reportDataController.expungeData(user, mockedRequest);
     } catch (Exception ignored) {}
   }
 }
