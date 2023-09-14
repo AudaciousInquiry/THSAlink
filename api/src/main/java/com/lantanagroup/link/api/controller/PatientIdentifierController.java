@@ -120,9 +120,9 @@ public class PatientIdentifierController extends BaseController {
       logger.info("Patient List Processing Started (Task ID: {})", taskId);
 
       IParser parser;
-      if (receivedType.equals(MediaType.APPLICATION_JSON_VALUE)) {
+      if (receivedType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
         parser = ctx.newJsonParser();
-      } else if (receivedType.equals(MediaType.APPLICATION_XML_VALUE)) {
+      } else if (receivedType.startsWith(MediaType.APPLICATION_XML_VALUE)) {
         parser = ctx.newXmlParser();
       } else {
         throw new Exception("Received payload isn't JSON or XML");
