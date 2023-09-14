@@ -1,9 +1,7 @@
 package com.lantanagroup.link.api.controller;
 
+import com.lantanagroup.link.*;
 import com.lantanagroup.link.Constants;
-import com.lantanagroup.link.FhirDataProvider;
-import com.lantanagroup.link.FhirHelper;
-import com.lantanagroup.link.IDataProcessor;
 import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.config.datagovernance.DataGovernanceConfig;
 import com.lantanagroup.link.config.query.USCoreConfig;
@@ -12,7 +10,7 @@ import com.lantanagroup.link.model.ExpungeResourcesToDelete;
 import com.lantanagroup.link.model.ExpungeResponse;
 import lombok.Getter;
 import lombok.Setter;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +21,22 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/api")
 public class ReportDataController extends BaseController {
   private static final Logger logger = LoggerFactory.getLogger(ReportDataController.class);
+
+  // Instantiate an executor service
+  private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
   @Autowired
   @Setter
@@ -51,6 +53,12 @@ public class ReportDataController extends BaseController {
   // Disallow binding of sensitive attributes
   // Ex: DISALLOWED_FIELDS = new String[]{"details.role", "details.age", "is_admin"};
   final String[] DISALLOWED_FIELDS = new String[]{};
+
+  @PreDestroy
+  public void shutdown() {
+    // needed to avoid resource leak
+    executor.shutdown();
+  }
   @InitBinder
   public void initBinder(WebDataBinder binder) {
     binder.setDisallowedFields(DISALLOWED_FIELDS);
@@ -70,34 +78,80 @@ public class ReportDataController extends BaseController {
     dataProcessor.process(content, getFhirDataProvider());
   }
 
+  private void manualExpungeTask(LinkCredentials user, HttpServletRequest request, ExpungeResourcesToDelete resourcesToDelete, String taskId) {
+
+    logger.info("Manual Expunge Started (Task ID: {})", taskId);
+
+    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    Task task = fhirDataProvider.getTaskById(taskId);
+
+    try {
+      for (String resourceIdentifier : resourcesToDelete.getResourceIdentifiers()) {
+        try {
+          fhirDataProvider.deleteResource(resourcesToDelete.getResourceType(), resourceIdentifier, true);
+          getFhirDataProvider().audit(request,
+                  user.getJwt(),
+                  FhirHelper.AuditEventTypes.Delete,
+                  String.format("Resource of Type '%s' with Id of '%s' has been expunged.", resourcesToDelete.getResourceType(), resourceIdentifier));
+          logger.info("Removing Resource of type {} with Identifier {}", resourcesToDelete.getResourceType(), resourceIdentifier);
+        } catch (Exception ex) {
+          logger.info("Issue Removing Resource of type {} with Identifier {}", resourcesToDelete.getResourceType(), resourceIdentifier);
+          throw ex;
+        }
+      }
+      task.setStatus(Task.TaskStatus.COMPLETED);
+    } catch (Exception ex) {
+      logger.error("Manual Expunge Error - {} (Task ID: {}", ex.getMessage(), taskId);
+      Annotation note = new Annotation();
+      note.setText(String.format("Issue With Data Expunge: %s", ex.getMessage()));
+      task.setNote(Arrays.asList(note));
+      task.setStatus(Task.TaskStatus.FAILED);
+    } finally {
+      task.setLastModified(new Date());
+      fhirDataProvider.updateResource(task);
+    }
+
+    logger.info("Manual Expunge Complete (Task ID: {})", taskId);
+
+  }
+
   @PostMapping(value = "/data/manual-expunge")
-  public ResponseEntity<ExpungeResponse> manualExpunge(
+  public ResponseEntity<?> manualExpunge(
           @AuthenticationPrincipal LinkCredentials user,
           HttpServletRequest request,
           @RequestBody ExpungeResourcesToDelete resourcesToDelete) throws Exception {
 
-    ExpungeResponse response = new ExpungeResponse();
-    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    //ExpungeResponse response = new ExpungeResponse();
 
     Boolean hasExpungeRole = HasExpungeRole(user);
 
     if (!hasExpungeRole) {
       logger.error("User doesn't have proper role to expunge data");
-      response.setMessage("User doesn't have proper role to expunge data");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User does not have proper role to expunge data.");
     }
 
     if (resourcesToDelete == null) {
-      logger.error("Payload not provided");
-      throw new Exception();
+      String errorMessage = "Payload not provided";
+      logger.error(errorMessage);
+      //throw new Exception();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     } else if (resourcesToDelete.getResourceType() == null || resourcesToDelete.getResourceType().trim().isEmpty()) {
+      String errorMessage = "Resource type to delete not specified";
       logger.error("Resource type to delete not specified");
-      throw new Exception();
+      //throw new Exception();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     } else if (resourcesToDelete.getResourceIdentifiers() == null || resourcesToDelete.getResourceIdentifiers().length == 0) {
+      String errorMessage = "Resource Identifiers to delete not specified";
       logger.error("Resource Identifiers to delete not specified");
-      throw new Exception();
+      //throw new Exception();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 
+    Task responseTask = TaskHelper.getNewTask(user, Constants.MANUAL_EXPUNGE);
+    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    fhirDataProvider.updateResource(responseTask);
+
+    /*
     for (String resourceIdentifier : resourcesToDelete.getResourceIdentifiers()) {
       try {
         fhirDataProvider.deleteResource(resourcesToDelete.getResourceType(), resourceIdentifier, true);
@@ -111,10 +165,112 @@ public class ReportDataController extends BaseController {
         throw new Exception();
       }
     }
+    */
 
-    response.setMessage("All specified items submitted to Data Store for removal.");
-    return ResponseEntity.ok(response);
+    executor.submit(() -> manualExpungeTask(user, request, resourcesToDelete,responseTask.getId()));
 
+    //response.setMessage("All specified items submitted to Data Store for removal.");
+    //return ResponseEntity.ok(response);
+    return ResponseEntity.ok(responseTask);
+  }
+
+  private void expungeData(LinkCredentials user, HttpServletRequest request, String taskId) {
+
+    logger.info("Data Expunge Started (Task ID: {})", taskId);
+
+    // Get the task so that it can be updated later
+    FhirDataProvider dataProvider = getFhirDataProvider();
+    Task task = dataProvider.getTaskById(taskId);
+
+    try {
+      if (dataGovernanceConfig == null) {
+        throw new Exception(String.format("API Data Governance Not Configured (Task ID %s)", taskId));
+      }
+
+      expungeCountByTypeAndRetentionAndPatientFilter(request,
+              user,
+              dataGovernanceConfig.getExpungeChunkSize(),
+              "List",
+              dataGovernanceConfig.getCensusListRetention(),
+              false);
+
+      expungeCountByTypeAndRetentionAndPatientFilter(request,
+              user,
+              dataGovernanceConfig.getExpungeChunkSize(),
+              "Bundle",
+              dataGovernanceConfig.getPatientDataRetention(),
+              true);
+
+      // This to remove the "placeholder" Patient resources
+      expungeCountByTypeAndRetentionAndPatientFilter(request,
+              user,
+              dataGovernanceConfig.getExpungeChunkSize(),
+              "Patient",
+              dataGovernanceConfig.getPatientDataRetention(),
+              false);
+
+      // Remove individual MeasureReport tied to Patient
+      // Individual MeasureReport for patient will be tagged.  Others have no PHI.
+      expungeCountByTypeAndRetentionAndPatientFilter(request,
+              user,
+              dataGovernanceConfig.getExpungeChunkSize(),
+              "MeasureReport",
+              dataGovernanceConfig.getMeasureReportRetention(),
+              true);
+
+      // Loop uscore.patient-resource-types & other-resource-types and delete
+      for (String resourceType : usCoreConfig.getPatientResourceTypes()) {
+        expungeCountByTypeAndRetentionAndPatientFilter(request,
+                user,
+                dataGovernanceConfig.getExpungeChunkSize(),
+                resourceType,
+                dataGovernanceConfig.getResourceTypeRetention(),
+                false);
+      }
+
+      for (USCoreOtherResourceTypeConfig otherResourceType : usCoreConfig.getOtherResourceTypes()) {
+        expungeCountByTypeAndRetentionAndPatientFilter(request,
+                user,
+                dataGovernanceConfig.getExpungeChunkSize(),
+                otherResourceType.getResourceType(),
+                dataGovernanceConfig.getOtherTypeRetention(),
+                false);
+      }
+
+      logger.info("Data Expunge Complete (Task ID: {})", taskId);
+
+      task.setStatus(Task.TaskStatus.COMPLETED);
+
+    } catch (Exception ex) {
+      logger.error("Data Expunge Issue: {} (Task ID: {})", ex.getMessage(), taskId);
+      Annotation note = new Annotation();
+      note.setText(String.format("Issue With Data Expunge: %s", ex.getMessage()));
+      task.setNote(Arrays.asList(note));
+      task.setStatus(Task.TaskStatus.FAILED);
+    } finally {
+      task.setLastModified(new Date());
+      dataProvider.updateResource(task);
+    }
+
+  }
+  @DeleteMapping(value = "/data/expunge")
+  public ResponseEntity<?> expungeData(@AuthenticationPrincipal LinkCredentials user,
+                                   HttpServletRequest request) {
+
+    Boolean hasExpungeRole = HasExpungeRole(user);
+
+    if (!hasExpungeRole) {
+      logger.error("User doesn't have proper role to expunge data");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User does not have proper role to expunge data.");
+    }
+
+    Task responseTask = TaskHelper.getNewTask(user, Constants.EXPUNGE_TASK);
+    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    fhirDataProvider.updateResource(responseTask);
+
+    executor.submit(() -> expungeData(user, request, responseTask.getId()));
+
+    return ResponseEntity.ok(responseTask);
   }
 
   /**
@@ -122,7 +278,7 @@ public class ReportDataController extends BaseController {
    * Deletes all census lists, patient data bundles, and measure reports stored on the server if their retention period
    * has been reached.
    */
-  @DeleteMapping(value = "/data/expunge")
+  @DeleteMapping(value = "/data/oldexpunge")
   public ResponseEntity<ExpungeResponse> expungeSpecificData(@AuthenticationPrincipal LinkCredentials user,
                                                              HttpServletRequest request) throws Exception {
     ExpungeResponse response = new ExpungeResponse();
