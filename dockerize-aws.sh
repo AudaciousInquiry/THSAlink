@@ -20,7 +20,8 @@ declare -a image_tags=("thsa-link-api:./api/Dockerfile"
 "thsa-link-web:./web/Dockerfile"
 "thsa-link-cli-refresh-patient-list:./cli/docker/refresh-patient-list/Dockerfile"
 "thsa-link-cli-generate-and-submit:./cli/docker/generate-and-submit/Dockerfile"
-"thsa-link-cli-expunge-data:./cli/docker/expunge-data/Dockerfile")
+"thsa-link-cli-expunge-data:./cli/docker/expunge-data/Dockerfile"
+"thsa-link-cli-parkland-csv:./cli/docker/parkland-csv/Dockerfile")
 
 if [ $# -eq 2 ] && [ "$2" == "PUSH" ]; then PUSH="YES"; fi
 
