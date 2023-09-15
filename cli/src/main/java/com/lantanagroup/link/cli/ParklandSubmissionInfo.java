@@ -13,4 +13,6 @@ public class ParklandSubmissionInfo {
     private String submissionUrl;
     @NotEmpty
     private LinkOAuthConfig submissionAuth;
+
+    private String[] icuIdentifiers;
 }
