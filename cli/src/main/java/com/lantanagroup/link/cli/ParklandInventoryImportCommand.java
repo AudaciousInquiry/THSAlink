@@ -2,6 +2,7 @@ package com.lantanagroup.link.cli;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lantanagroup.link.auth.OAuth2Helper;
+import com.lantanagroup.link.tasks.ParklandBedCountCsvConverter;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -46,7 +47,10 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
 
       SetConfigFileName(fileName);
       byte[] data = download();
-      submit(data);
+
+      byte[] convertedCsvData = ParklandBedCountCsvConverter.ConvertParklandBedCsv(data, config.getSubmissionInfo().get(fileType).getIcuIdentifiers());
+
+      submit(convertedCsvData);
     } catch (Exception ex) {
       logger.error("Failure with process, will not continue");
     }
@@ -60,6 +64,7 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
               config.getDownloader().get(fileType).getHost(),
               config.getDownloader().get(fileType).getPath());
       SftpDownloader downloader = new SftpDownloader(config.getDownloader().get(fileType));
+
       downloadedData = downloader.download();
     } catch (Exception ex) {
       logger.error("Issue with download: {}", ex.getMessage());
