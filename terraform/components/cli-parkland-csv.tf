@@ -12,14 +12,14 @@ module "ecs-task-parkland-csv" {
   # TFVARS
   image_repository = var.docker_image_repository
   image_name = "thsa-link-cli-parkland-csv"
-  image_tag = "THSALINK-020_6"//var.default_docker_tag
+  image_tag = "THSALINK-020_7"//var.default_docker_tag
   ecs_task_role = data.terraform_remote_state.infra.outputs.iam-role-arn
 
   container_environment_file = jsonencode([])
   container_environment = jsonencode([])
 
-  cpu_size = "2048" //var.default_cpu_size
-  memory_size = "6144" //var.default_memory_size
+  cpu_size = var.default_cpu_size
+  memory_size = var.default_memory_size
 
   mount_points = jsonencode([{
     sourceVolume: "cli",
@@ -32,7 +32,6 @@ module "ecs-task-parkland-csv" {
   volume_root_directory = "/cli"
 }
 
-/*
 resource "aws_scheduler_schedule" "parkland-csv-schedule" {
   name = "${var.environment}-${var.customer}-${var.project_code}-parkland-csv"
   group_name = "default"
@@ -41,7 +40,7 @@ resource "aws_scheduler_schedule" "parkland-csv-schedule" {
     mode = "OFF"
   }
 
-  schedule_expression = "rate(5 minutes)"
+  schedule_expression = "rate(1 days)"
 
   target {
     arn      = data.terraform_remote_state.infra.outputs.ecs_cluster_arn
@@ -61,4 +60,3 @@ resource "aws_scheduler_schedule" "parkland-csv-schedule" {
     }
   }
 }
-*/
