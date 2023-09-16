@@ -65,3 +65,11 @@ resource "aws_ecrpublic_repository" "thsa-link-cli-expunge-data" {
     CreatedBy = "terraform"
   }
 }
+
+resource "aws_ecrpublic_repository" "thsa-link-cli-parkland-csv" {
+  repository_name = "thsa-link-cli-parkland-csv"
+  tags = {
+
+    CreatedBy = "terraform"
+  }
+}
