@@ -36,33 +36,39 @@ public class SftpDownloader {
   }
 
   public byte[] download() throws IOException, JSchException, SftpException {
+
+    logger.info("Download call to retrieve {} from {}:{}",
+            downloadFilePath,
+            host,
+            port);
+
     JSch jSch = new JSch();
 
     // If knownHostsString contains data use that.  Otherwise, rely on
     // knownHostsFilePath to read in from a file.
     if (!(knownHostsString == null) && !knownHostsString.isEmpty() && !knownHostsString.isBlank()) {
-      logger.info("Known Hosts specified as string");
       jSch.setKnownHosts(new ByteArrayInputStream(knownHostsString.getBytes()));
     } else {
-      logger.info("Known Hosts will be read from file: {}", knownHostsFilePath);
       jSch.setKnownHosts(knownHostsFilePath);
     }
 
     Session session = jSch.getSession(username, host, port);
     session.setPassword(password);
-    logger.info("Session Connect");
     session.connect();
+    logger.info("Session Connected");
     try {
       ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
-      logger.info("Channel Connect");
       channel.connect();
+      logger.info("Channel Connected");
       try (InputStream stream = channel.get(downloadFilePath)) {
         return stream.readAllBytes();
       } finally {
         channel.exit();
+        logger.info("Channel Disconnected");
       }
     } finally {
       session.disconnect();
+      logger.info("Session Disconnected");
     }
   }
 
