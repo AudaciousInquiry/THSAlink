@@ -27,10 +27,12 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
           value = "Download an inventory via SFTP and submit it to Link.")
   public void execute(String fileType, @ShellOption(defaultValue="") String fileName) {
     try {
+      logger.info("Parkland Inventory Import ({}} Started", fileType);
       this.fileType = fileType;
       registerBeans();
       config = applicationContext.getBean(ParklandInventoryImportConfig.class);
       validate(config);
+      logger.info("Configuration Validated");
 
       // Check to make sure the downloader & submissionInfo sections
       // exist for the fileType
@@ -47,12 +49,16 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
 
       SetConfigFileName(fileName);
       byte[] data = download();
+      logger.info("Download Completed");
 
       byte[] convertedCsvData = ParklandBedCountCsvConverter.ConvertParklandBedCsv(data, config.getSubmissionInfo().get(fileType).getIcuIdentifiers());
+      logger.info("CSV Conversion Complete");
 
       submit(convertedCsvData);
+
+      logger.info("Parkland Inventory Import ({}} Completed", fileType);
     } catch (Exception ex) {
-      logger.error("Failure with process, will not continue");
+      logger.error("Parkland Inventory Import Failure: {}", ex.getMessage());
     }
   }
 
@@ -88,7 +94,8 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
     }
 
     request.setEntity(new ByteArrayEntity(data));
-    HttpResponse response = Utility.HttpExecuter(request, logger);
+    //HttpResponse response = Utility.HttpExecuter(request, logger);
+    HttpResponse response = Utility.HttpExecutor(request);
     logger.info("HTTP Response Code {}", response.getStatusLine().getStatusCode());
   }
 

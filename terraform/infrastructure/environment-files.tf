@@ -97,3 +97,12 @@ module "cli-configuration-file" {
   s3-bucket = module.ecs-configuration-s3.s3_bucket
   environment = var.environment
 }
+
+# Known Hosts file for sftp.ainq.com (for testing purposes)
+module "sftp_ainq_com-file" {
+  source = "../modules/s3-file"
+  file-name = "cli/sftp.ainq.com-knownhosts"
+  file-path = "../environment-files/"
+  s3-bucket = module.ecs-configuration-s3.s3_bucket
+  environment = var.environment
+}
