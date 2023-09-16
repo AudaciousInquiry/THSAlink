@@ -55,6 +55,7 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
       logger.info("CSV Conversion Complete");
 
       submit(convertedCsvData);
+      logger.info("CSV Data Submitted To API");
 
       logger.info("Parkland Inventory Import ({}} Completed", fileType);
     } catch (Exception ex) {
@@ -65,12 +66,7 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
   private byte[] download() throws Exception {
     byte[] downloadedData;
     try {
-      logger.info("Downloading {} from {}/{}",
-              config.getDownloader().get(fileType).getFileName(),
-              config.getDownloader().get(fileType).getHost(),
-              config.getDownloader().get(fileType).getPath());
       SftpDownloader downloader = new SftpDownloader(config.getDownloader().get(fileType));
-
       downloadedData = downloader.download();
     } catch (Exception ex) {
       logger.error("Issue with download: {}", ex.getMessage());

@@ -24,6 +24,8 @@ public class ParklandBedCountCsvConverter {
             This is what we are going to re-create.
         */
 
+        logger.info("Creating Bed Inventory CSV - Total Beds: {}, Total ICU Beds: {}", totalBeds, icuBeds);
+
         StringWriter stringWriter = new StringWriter();
 
         try (CSVWriter writer = new CSVWriter(stringWriter)) {
@@ -60,26 +62,16 @@ public class ParklandBedCountCsvConverter {
 
     public static byte[] ConvertParklandBedCsv(byte[] csvData, String[] icuSpecialFacs) throws Exception {
         try {
-            logger.info("Received CSV Data Byte Size: {}", csvData.length);
+            logger.info("Parkland Bed CSV Conversion - Started");
             InputStream contentStream = new ByteArrayInputStream(csvData);
-            logger.info("ByteArrayInputStream Created");
             Reader reader = new InputStreamReader(contentStream);
-            logger.info("InputStreamReader Created");
             CSVReaderHeaderAware csvReader = new CSVReaderHeaderAware(reader);
-            logger.info("CSVReaderHeaderAware Created");
 
-            // This Arrays.asList seems to fail in ECS... cannot figure out why yet
-            /*
-            List<String> icuIdentifiersList = Arrays.asList(icuSpecialFacs);
-            logger.info("Converted byte[] to List");
-             */
-            logger.info("Starting byte[] to List");
+            logger.info("ICU Facility Identifiers: {}", String.join(",", icuSpecialFacs));
             List<String> icuIdentifiersList = new ArrayList<>();
-            for (String fac: icuSpecialFacs) {
-                logger.info("Fac: {}", fac);
-                icuIdentifiersList.add(fac);
+            if (icuSpecialFacs.length > 0) {
+                icuIdentifiersList = Arrays.asList(icuSpecialFacs);
             }
-            logger.info("Converted byte[] to List");
 
             int totalRecords=0;
             int icuRecords=0;
@@ -87,14 +79,17 @@ public class ParklandBedCountCsvConverter {
             Map<String,String> record;
             while ( (record = csvReader.readMap()) != null) {
                 totalRecords++;
-                logger.info("Record Counter: {}", totalRecords);
                 if (icuIdentifiersList.contains(record.get("Special Facs"))) {
                     icuRecords++;
                 }
             }
 
-            return CreateBedInventoryCsv(totalRecords, icuRecords);
+            logger.info("Total Records: {}", totalRecords);
+            logger.info("Total ICU Records: {}", icuRecords);
 
+            logger.info("Parkland Bed CSV Conversion - Completed");
+
+            return CreateBedInventoryCsv( (totalRecords - icuRecords), icuRecords);
         } catch (Exception ex) {
             logger.error("Issue converting Parkland bed CSV file: {}", ex.getMessage());
             throw ex;
