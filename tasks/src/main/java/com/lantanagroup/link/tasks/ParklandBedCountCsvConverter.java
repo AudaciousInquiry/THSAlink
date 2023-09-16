@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,11 +60,26 @@ public class ParklandBedCountCsvConverter {
 
     public static byte[] ConvertParklandBedCsv(byte[] csvData, String[] icuSpecialFacs) throws Exception {
         try {
+            logger.info("Received CSV Data Byte Size: {}", csvData.length);
             InputStream contentStream = new ByteArrayInputStream(csvData);
+            logger.info("ByteArrayInputStream Created");
             Reader reader = new InputStreamReader(contentStream);
+            logger.info("InputStreamReader Created");
             CSVReaderHeaderAware csvReader = new CSVReaderHeaderAware(reader);
+            logger.info("CSVReaderHeaderAware Created");
 
+            // This Arrays.asList seems to fail in ECS... cannot figure out why yet
+            /*
             List<String> icuIdentifiersList = Arrays.asList(icuSpecialFacs);
+            logger.info("Converted byte[] to List");
+             */
+            logger.info("Starting byte[] to List");
+            List<String> icuIdentifiersList = new ArrayList<>();
+            for (String fac: icuSpecialFacs) {
+                logger.info("Fac: {}", fac);
+                icuIdentifiersList.add(fac);
+            }
+            logger.info("Converted byte[] to List");
 
             int totalRecords=0;
             int icuRecords=0;
@@ -71,6 +87,7 @@ public class ParklandBedCountCsvConverter {
             Map<String,String> record;
             while ( (record = csvReader.readMap()) != null) {
                 totalRecords++;
+                logger.info("Record Counter: {}", totalRecords);
                 if (icuIdentifiersList.contains(record.get("Special Facs"))) {
                     icuRecords++;
                 }
