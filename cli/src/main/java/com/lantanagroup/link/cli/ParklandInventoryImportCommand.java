@@ -2,6 +2,7 @@ package com.lantanagroup.link.cli;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lantanagroup.link.auth.OAuth2Helper;
+import com.lantanagroup.link.tasks.ParklandBedCountCsvConverter;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -26,10 +27,12 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
           value = "Download an inventory via SFTP and submit it to Link.")
   public void execute(String fileType, @ShellOption(defaultValue="") String fileName) {
     try {
+      logger.info("Parkland Inventory Import ({}} Started", fileType);
       this.fileType = fileType;
       registerBeans();
       config = applicationContext.getBean(ParklandInventoryImportConfig.class);
       validate(config);
+      logger.info("Configuration Validated");
 
       // Check to make sure the downloader & submissionInfo sections
       // exist for the fileType
@@ -46,19 +49,23 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
 
       SetConfigFileName(fileName);
       byte[] data = download();
-      submit(data);
+      logger.info("Download Completed");
+
+      byte[] convertedCsvData = ParklandBedCountCsvConverter.ConvertParklandBedCsv(data, config.getSubmissionInfo().get(fileType).getIcuIdentifiers());
+      logger.info("CSV Conversion Complete");
+
+      submit(convertedCsvData);
+      logger.info("CSV Data Submitted To API");
+
+      logger.info("Parkland Inventory Import ({}} Completed", fileType);
     } catch (Exception ex) {
-      logger.error("Failure with process, will not continue");
+      logger.error("Parkland Inventory Import Failure: {}", ex.getMessage());
     }
   }
 
   private byte[] download() throws Exception {
     byte[] downloadedData;
     try {
-      logger.info("Downloading {} from {}/{}",
-              config.getDownloader().get(fileType).getFileName(),
-              config.getDownloader().get(fileType).getHost(),
-              config.getDownloader().get(fileType).getPath());
       SftpDownloader downloader = new SftpDownloader(config.getDownloader().get(fileType));
       downloadedData = downloader.download();
     } catch (Exception ex) {
@@ -83,7 +90,8 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
     }
 
     request.setEntity(new ByteArrayEntity(data));
-    HttpResponse response = Utility.HttpExecuter(request, logger);
+    //HttpResponse response = Utility.HttpExecuter(request, logger);
+    HttpResponse response = Utility.HttpExecutor(request);
     logger.info("HTTP Response Code {}", response.getStatusLine().getStatusCode());
   }
 
