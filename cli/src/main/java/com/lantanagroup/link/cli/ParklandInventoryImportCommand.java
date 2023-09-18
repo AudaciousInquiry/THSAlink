@@ -2,7 +2,6 @@ package com.lantanagroup.link.cli;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lantanagroup.link.auth.OAuth2Helper;
-import com.lantanagroup.link.tasks.ParklandBedCountCsvConverter;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -51,10 +50,12 @@ public class ParklandInventoryImportCommand extends BaseShellCommand {
       byte[] data = download();
       logger.info("Download Completed");
 
+      /*
       byte[] convertedCsvData = ParklandBedCountCsvConverter.ConvertParklandBedCsv(data, config.getSubmissionInfo().get(fileType).getIcuIdentifiers());
       logger.info("CSV Conversion Complete");
+       */
 
-      submit(convertedCsvData);
+      submit(data);
       logger.info("CSV Data Submitted To API");
 
       logger.info("Parkland Inventory Import ({}} Completed", fileType);

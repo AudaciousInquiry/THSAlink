@@ -4,6 +4,8 @@ import com.lantanagroup.link.config.YamlPropertySourceFactory;
 import com.lantanagroup.link.config.auth.LinkAuthManager;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -21,6 +23,7 @@ import java.util.List;
 @Validated
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
 public class ApiConfig {
+  private static final Logger logger = LoggerFactory.getLogger(ApiConfig.class);
 
   /**
    * <strong>api.validate-fhir-server</strong><br>Boolean for whether to check for metadata before request or not
@@ -125,7 +128,7 @@ public class ApiConfig {
   /**
    * The key represents the “type” of data source (csv, excel, etc.) and the value represents the class to use to process the data.
    */
-  private HashMap<String, String> dataProcessor;
+  private HashMap<String, HashMap<String, String>> dataProcessor;
 
   /**
    * The string represents the data measure report id that gets continuously updated.
@@ -145,4 +148,20 @@ public class ApiConfig {
    * <strong>api.skip-query</strong><br>Whether to skip the query phase of report generation; useful if patient data bundles have already been stored.
    */
   private boolean skipQuery = false;
+
+  public boolean ValidDataProcessor(String source, String type) {
+    if (getDataProcessor() == null || getDataProcessor().get(source) == null || getDataProcessor().get(source).equals("")) {
+      logger.error("Cannot find data processor for source '{}'", source);
+      return false;
+    }
+
+    HashMap<String, String> genericDataProcessor = getDataProcessor().get(source);
+
+    if (genericDataProcessor.get(type) == null || genericDataProcessor.get(type).isEmpty()) {
+      logger.error("Cannot find generic source processor for type '{}'", type);
+      return false;
+    }
+
+    return true;
+  }
 }

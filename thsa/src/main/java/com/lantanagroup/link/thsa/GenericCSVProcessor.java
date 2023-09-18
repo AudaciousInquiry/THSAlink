@@ -23,7 +23,7 @@ public class GenericCSVProcessor implements IDataProcessor {
   private THSAConfig thsaConfig;
 
   @Override
-  public void process(byte[] dataContent, FhirDataProvider fhirDataProvider) {
+  public String process(byte[] dataContent, FhirDataProvider fhirDataProvider) {
 
     MeasureReport measureReport = new MeasureReport();
 
@@ -41,8 +41,7 @@ public class GenericCSVProcessor implements IDataProcessor {
       try {
         measureReport = converter.convert(reader);
       } catch (IOException e) {
-
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
 
       measureReport.setId(this.thsaConfig.getBedInventoryReportId());
@@ -55,11 +54,11 @@ public class GenericCSVProcessor implements IDataProcessor {
               .setRequest(new Bundle.BundleEntryRequestComponent()
                       .setMethod(Bundle.HTTPVerb.PUT)
                       .setUrl("MeasureReport/" + this.thsaConfig.getBedInventoryReportId()));
-      Bundle response = fhirDataProvider.transaction(updateBundle);
-
+      fhirDataProvider.transaction(updateBundle);
     }
     catch(IOException ex) {
       logger.error("Error converting measure in THSA data processor: " + ex.getMessage());
     }
+    return measureReport.getId();
   }
 }

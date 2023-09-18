@@ -8,6 +8,7 @@ import com.lantanagroup.link.config.query.USCoreConfig;
 import com.lantanagroup.link.config.query.USCoreOtherResourceTypeConfig;
 import com.lantanagroup.link.model.ExpungeResourcesToDelete;
 import com.lantanagroup.link.model.ExpungeResponse;
+import com.lantanagroup.link.model.UploadFile;
 import lombok.Getter;
 import lombok.Setter;
 import org.hl7.fhir.r4.model.*;
@@ -18,11 +19,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -64,15 +67,117 @@ public class ReportDataController extends BaseController {
     binder.setDisallowedFields(DISALLOWED_FIELDS);
   }
 
+  @PostMapping(value="/data/file")
+  public ResponseEntity<?> receiveFileData(@AuthenticationPrincipal LinkCredentials user,
+                              HttpServletRequest request,
+                                           @Valid @RequestBody UploadFile uploadFile,
+                                           BindingResult bindingResult) {
+
+    if (bindingResult.hasErrors()) {
+      StringBuilder errorMessages = new StringBuilder();
+      bindingResult.getAllErrors().forEach(error -> errorMessages.append(error.getDefaultMessage()).append("\n"));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessages);
+    }
+
+    logger.info("Received UploadFile of Type '{}' and Name '{}'", uploadFile.getType(), uploadFile.getName());
+
+    Task response = TaskHelper.getNewTask(user, Constants.FILE_UPLOAD);
+    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    fhirDataProvider.updateResource(response);
+
+    // call processUploadFile
+    executor.submit(() -> processUploadFile(user, uploadFile, response.getId()));
+
+    return ResponseEntity.ok(response);
+  }
+
+  private void processUploadFile(LinkCredentials user, UploadFile uploadFile, String taskId) {
+
+    logger.info("Processing UploadFile of type '{}' from source '{}'", uploadFile.getType(), uploadFile.getSource());
+
+    // Default to generic source if not specific...
+    if (uploadFile.getSource() == null || uploadFile.getSource().isEmpty()){
+      uploadFile.setSource("generic");
+    }
+
+    boolean validDataProcessorConfig = config.ValidDataProcessor(uploadFile.getSource(), uploadFile.getType());
+    if (!validDataProcessorConfig) {
+      String errorMessage = "Data Processor configuration is invalid.  Check 'data-process' section of API configuration";
+      logger.error(errorMessage);
+      throw new IllegalStateException(errorMessage);
+    }
+    logger.info("Data Processor configuration is valid");
+
+    // Get the task so that it can be updated later
+    FhirDataProvider dataProvider = getFhirDataProvider();
+    Task task = dataProvider.getTaskById(taskId);
+    Annotation annotation = TaskHelper.getAnnotationFromString(String.format("File of type '%s' from source '%s'", uploadFile.getType(), uploadFile.getSource()));
+    task.addNote(annotation);
+
+    try {
+
+      // Content should be Base64
+      byte[] decodedContent = Base64.getDecoder().decode(uploadFile.getContent());
+      logger.info("Decoded Uploaded File, byte size {}", decodedContent.length);
+
+      // Get Processor Class Name
+      HashMap<String, String> processorMapForSource = config.getDataProcessor().get(uploadFile.getSource());
+      String dataProcessorClassName = processorMapForSource.get(uploadFile.getType());
+      logger.info("Data Processor class that will be used: {}", dataProcessorClassName);
+
+      Class<?> dataProcessorClass = Class.forName(dataProcessorClassName);
+      IUploadFileToMeasureReport dataProcessor = (IUploadFileToMeasureReport) this.context.getBean(dataProcessorClass);
+
+      logger.info("Starting Process of Uploaded File");
+      MeasureReport measureReport = dataProcessor.convert(uploadFile, dataProvider);
+      logger.info("Process of Uploaded File completed");
+
+      // Update Task to complete
+      task.setStatus(Task.TaskStatus.COMPLETED);
+
+      // Add note about MeasureReport created with this upload
+      String processNote = String.format("Upload File created MeasureReport with ID: %s", measureReport.getId());
+      annotation = TaskHelper.getAnnotationFromString(processNote);
+      task.addNote(annotation);
+      logger.info(processNote);
+
+      // Create Provenance to track downloaded file
+      logger.info("Adding Provenance for downloaded file");
+      Provenance provenance = ProvenanceHelper.getNewFileDownloadProvenance(user, Arrays.asList(measureReport, task), Constants.EXTERNAL_FILE_DOWNLOAD, uploadFile.getSource(), uploadFile.getType());
+      dataProvider.createResource(provenance);
+
+      // Add Provenance to Task
+      Reference provenanceReference = new Reference();
+      provenanceReference.setReference(String.format("%s/%s", provenance.getResourceType().name(), provenance.getIdElement().getIdPart()));
+      task.setFor(provenanceReference);
+
+    } catch (Exception ex) {
+      String processNote = String.format("Issue With Upload File Processing: %s", ex.getMessage());
+      logger.error(processNote);
+      annotation = TaskHelper.getAnnotationFromString(processNote);
+      task.addNote(annotation);
+      task.setStatus(Task.TaskStatus.FAILED);
+    } finally {
+      task.setLastModified(new Date());
+      dataProvider.updateResource(task);
+    }
+
+  }
   @PostMapping(value = "/data/{type}")
   public void receiveData(@RequestBody() byte[] content, @PathVariable("type") String type) throws Exception {
-    if (config.getDataProcessor() == null || config.getDataProcessor().get(type) == null || config.getDataProcessor().get(type).equals("")) {
-      throw new IllegalStateException("Cannot find data processor.");
+
+    boolean validDataProcessor = config.ValidDataProcessor("generic", type);
+    if (!validDataProcessor) {
+      String errorMessage = "Data Processor configuration is invalid.  Check 'data-process' section of API configuration";
+      logger.error(errorMessage);
+      throw new IllegalStateException(errorMessage);
     }
+
+    HashMap<String, String> genericDataProcessor = config.getDataProcessor().get("generic");
 
     logger.debug("Receiving " + type + " data. Parsing...");
 
-    Class<?> dataProcessorClass = Class.forName(this.config.getDataProcessor().get(type));
+    Class<?> dataProcessorClass = Class.forName(genericDataProcessor.get(type));
     IDataProcessor dataProcessor = (IDataProcessor) this.context.getBean(dataProcessorClass);
 
     dataProcessor.process(content, getFhirDataProvider());
@@ -121,8 +226,6 @@ public class ReportDataController extends BaseController {
           HttpServletRequest request,
           @RequestBody ExpungeResourcesToDelete resourcesToDelete) throws Exception {
 
-    //ExpungeResponse response = new ExpungeResponse();
-
     Boolean hasExpungeRole = HasExpungeRole(user);
 
     if (!hasExpungeRole) {
@@ -151,26 +254,8 @@ public class ReportDataController extends BaseController {
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
     fhirDataProvider.updateResource(responseTask);
 
-    /*
-    for (String resourceIdentifier : resourcesToDelete.getResourceIdentifiers()) {
-      try {
-        fhirDataProvider.deleteResource(resourcesToDelete.getResourceType(), resourceIdentifier, true);
-        getFhirDataProvider().audit(request,
-                user.getJwt(),
-                FhirHelper.AuditEventTypes.Delete,
-                String.format("Resource of Type '%s' with Id of '%s' has been expunged.", resourcesToDelete.getResourceType(), resourceIdentifier));
-        logger.info("Removing Resource of type {} with Identifier {}", resourcesToDelete.getResourceType(), resourceIdentifier);
-      } catch (Exception ex) {
-        logger.info("Issue Removing Resource of type {} with Identifier {}", resourcesToDelete.getResourceType(), resourceIdentifier);
-        throw new Exception();
-      }
-    }
-    */
-
     executor.submit(() -> manualExpungeTask(user, request, resourcesToDelete,responseTask.getId()));
 
-    //response.setMessage("All specified items submitted to Data Store for removal.");
-    //return ResponseEntity.ok(response);
     return ResponseEntity.ok(responseTask);
   }
 
