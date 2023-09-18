@@ -163,25 +163,6 @@ public class ReportDataController extends BaseController {
     }
 
   }
-  @PostMapping(value = "/data/{type}")
-  public void receiveData(@RequestBody() byte[] content, @PathVariable("type") String type) throws Exception {
-
-    boolean validDataProcessor = config.ValidDataProcessor("generic", type);
-    if (!validDataProcessor) {
-      String errorMessage = "Data Processor configuration is invalid.  Check 'data-process' section of API configuration";
-      logger.error(errorMessage);
-      throw new IllegalStateException(errorMessage);
-    }
-
-    HashMap<String, String> genericDataProcessor = config.getDataProcessor().get("generic");
-
-    logger.debug("Receiving " + type + " data. Parsing...");
-
-    Class<?> dataProcessorClass = Class.forName(genericDataProcessor.get(type));
-    IDataProcessor dataProcessor = (IDataProcessor) this.context.getBean(dataProcessorClass);
-
-    dataProcessor.process(content, getFhirDataProvider());
-  }
 
   private void manualExpungeTask(LinkCredentials user, HttpServletRequest request, ExpungeResourcesToDelete resourcesToDelete, String taskId) {
 
@@ -356,81 +337,6 @@ public class ReportDataController extends BaseController {
     executor.submit(() -> expungeData(user, request, responseTask.getId()));
 
     return ResponseEntity.ok(responseTask);
-  }
-
-  /**
-   * @throws DatatypeConfigurationException
-   * Deletes all census lists, patient data bundles, and measure reports stored on the server if their retention period
-   * has been reached.
-   */
-  @DeleteMapping(value = "/data/oldexpunge")
-  public ResponseEntity<ExpungeResponse> expungeSpecificData(@AuthenticationPrincipal LinkCredentials user,
-                                                             HttpServletRequest request) throws Exception {
-    ExpungeResponse response = new ExpungeResponse();
-
-    Boolean hasExpungeRole = HasExpungeRole(user);
-
-    if (!hasExpungeRole) {
-      logger.error("User doesn't have proper role to expunge data");
-      response.setMessage("User doesn't have proper role to expunge data");
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
-
-    if(dataGovernanceConfig != null) {
-      expungeCountByTypeAndRetentionAndPatientFilter(request,
-              user,
-              dataGovernanceConfig.getExpungeChunkSize(),
-              "List",
-              dataGovernanceConfig.getCensusListRetention(),
-              false);
-
-      expungeCountByTypeAndRetentionAndPatientFilter(request,
-              user,
-              dataGovernanceConfig.getExpungeChunkSize(),
-              "Bundle",
-              dataGovernanceConfig.getPatientDataRetention(),
-              true);
-
-      // This to remove the "placeholder" Patient resources
-      expungeCountByTypeAndRetentionAndPatientFilter(request,
-              user,
-              dataGovernanceConfig.getExpungeChunkSize(),
-              "Patient",
-              dataGovernanceConfig.getPatientDataRetention(),
-              false);
-
-      // Remove individual MeasureReport tied to Patient
-      // Individual MeasureReport for patient will be tagged.  Others have no PHI.
-      expungeCountByTypeAndRetentionAndPatientFilter(request,
-              user,
-              dataGovernanceConfig.getExpungeChunkSize(),
-              "MeasureReport",
-              dataGovernanceConfig.getMeasureReportRetention(),
-              true);
-
-      // Loop uscore.patient-resource-types & other-resource-types and delete
-      for(String resourceType : usCoreConfig.getPatientResourceTypes()) {
-        expungeCountByTypeAndRetentionAndPatientFilter(request,
-                user,
-                dataGovernanceConfig.getExpungeChunkSize(),
-                resourceType,
-                dataGovernanceConfig.getResourceTypeRetention(),
-                false);
-      }
-
-      for(USCoreOtherResourceTypeConfig otherResourceType : usCoreConfig.getOtherResourceTypes()) {
-        expungeCountByTypeAndRetentionAndPatientFilter(request,
-                user,
-                dataGovernanceConfig.getExpungeChunkSize(),
-                otherResourceType.getResourceType(),
-                dataGovernanceConfig.getOtherTypeRetention(),
-                false);
-      }
-
-    }
-
-    response.setMessage("All identified items submitted to Data Store for removal.");
-    return ResponseEntity.ok(response);
   }
 
   private Date SubtractDurationFromNow(String retentionPeriod) throws DatatypeConfigurationException {
