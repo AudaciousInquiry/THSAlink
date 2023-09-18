@@ -45,7 +45,13 @@ public class Constants {
   public static final String LINK_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/link-version";
   public static final String MEASURE_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/measure-version";
   public static final String LinkUser = "link-user";
-  public static final Coding EXPUNGE_TASK = new Coding().setCode("EXPUNGEDATA").setSystem("https://nhsnlink.org").setDisplay("Expunge Data Task");
-  public static final Coding MANUAL_EXPUNGE = new Coding().setCode("MANUALEXPUNGE").setSystem("https://nhsnlink.org").setDisplay("Manual Expunge Task");
-  public static final Coding REFRESH_PATIENT_LIST = new Coding().setCode("REFRESHPATIENTLIST").setSystem("https://nhsnlink.org").setDisplay("Refresh Patient List Task");
+  public static final Coding EXPUNGE_TASK = new Coding().setCode("expunge-data").setSystem("https://nhsnlink.org").setDisplay("Expunge Data Task");
+  public static final Coding MANUAL_EXPUNGE = new Coding().setCode("manual-expunge").setSystem("https://nhsnlink.org").setDisplay("Manual Expunge Task");
+  public static final Coding REFRESH_PATIENT_LIST = new Coding().setCode("refresh-patient-list").setSystem("https://nhsnlink.org").setDisplay("Refresh Patient List Task");
+  public static final Coding FILE_UPLOAD = new Coding().setCode("file-upload").setSystem("https://nhsnlink.org").setDisplay("Upload Data File");
+  public static final Coding EXTERNAL_FILE_DOWNLOAD = new Coding().setCode("external-file-download").setSystem("https://nhsnlink.org").setDisplay("File Downloaded From Source");
+  public static final Coding EXTERNAL_SOURCE_GENERIC = new Coding().setCode("generic-source").setSystem("https://nhsnlink.org").setDisplay("Generic External Data Source");
+  public static final Coding EXTERNAL_SOURCE_PARKLAND = new Coding().setCode("parkland-source").setSystem("https://nhsnlink.org").setDisplay("Parkland External Data Source");
+  public static final Coding CSV_FILE_TYPE = new Coding().setCode("csv-file-type").setSystem("https://nhsnlink.org").setDisplay("CSV File Type");
+  public static final Coding EXCEL_FILE_TYPE = new Coding().setCode("excel-file-type").setSystem("https://nhsnlink.org").setDisplay("Excel File Types");
 }
