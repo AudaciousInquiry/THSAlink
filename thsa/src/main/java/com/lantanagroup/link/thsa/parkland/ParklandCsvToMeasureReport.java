@@ -6,7 +6,6 @@ import com.lantanagroup.link.FhirDataProvider;
 import com.lantanagroup.link.IUploadFileToMeasureReport;
 import com.lantanagroup.link.config.thsa.THSAConfig;
 import com.lantanagroup.link.model.UploadFile;
-import com.lantanagroup.link.thsa.GenericCSVProcessor;
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVWriter;
 import org.hl7.fhir.r4.model.Bundle;
