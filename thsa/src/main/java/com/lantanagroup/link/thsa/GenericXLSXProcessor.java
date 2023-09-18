@@ -25,7 +25,7 @@ public class GenericXLSXProcessor implements IDataProcessor {
   private THSAConfig thsaConfig;
 
   @Override
-  public void process(byte[] dataContent, FhirDataProvider fhirDataProvider) throws IOException {
+  public String process(byte[] dataContent, FhirDataProvider fhirDataProvider) throws IOException {
     InputStream contentStream = new ByteArrayInputStream(dataContent);
     XSSFWorkbook workbook = new XSSFWorkbook(contentStream);
 
@@ -43,6 +43,8 @@ public class GenericXLSXProcessor implements IDataProcessor {
                     .setMethod(Bundle.HTTPVerb.PUT)
                     .setUrl("MeasureReport/" + this.thsaConfig.getVentInventoryReportId()));
     Bundle response = fhirDataProvider.transaction(updateBundle);
+
+    return measureReport.getId();
   }
 
   MeasureReport convert(XSSFSheet sheet) {
