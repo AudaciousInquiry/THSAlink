@@ -6,6 +6,7 @@ import com.lantanagroup.link.Constants;
 import com.lantanagroup.link.FhirDataProvider;
 import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.config.datagovernance.DataGovernanceConfig;
+import com.lantanagroup.link.model.UploadFile;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ListResource;
@@ -14,6 +15,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
@@ -29,8 +32,18 @@ public class ReportDataControllerTest {
     // TODO: Remove @Ignore and add unit testing logic
     // TODO: Mock out the ReportDataController so that the config can be set
     ReportDataController reportDataController = new ReportDataController();
-    reportDataController.receiveData("csv content".getBytes(StandardCharsets.UTF_8), "csv");
-    reportDataController.receiveData("csv content".getBytes(StandardCharsets.UTF_8), "csv");
+
+    UploadFile uploadFile = new UploadFile();
+    uploadFile.setSource("parkland");
+    uploadFile.setType("csv");
+    uploadFile.setName("fake.csv");
+    uploadFile.setContent("Y3N2IGNvbnRlbnQ=");
+
+    LinkCredentials mockedUser = Mockito.mock(LinkCredentials.class);
+    HttpServletRequest  mockedRequest = Mockito.mock(HttpServletRequest.class);
+    BindingResult bindingResult = new BeanPropertyBindingResult(new UploadFile(), "uploadFile");
+
+    reportDataController.receiveFileData(mockedUser,mockedRequest, uploadFile, bindingResult);
   }
 
   @Test
@@ -102,7 +115,6 @@ public class ReportDataControllerTest {
     HttpServletRequest  mockedRequest = Mockito.mock(HttpServletRequest.class);
     LinkCredentials user = Mockito.mock(LinkCredentials.class);
     try {
-      reportDataController.expungeSpecificData(user, mockedRequest);
       reportDataController.expungeData(user, mockedRequest);
     } catch (Exception ignored) {}
   }
