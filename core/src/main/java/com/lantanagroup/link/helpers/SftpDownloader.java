@@ -21,19 +21,21 @@ public class SftpDownloader {
     private final String downloadFilePath;
     private static final Logger logger = LoggerFactory.getLogger(SftpDownloader.class);
 
-    public SftpDownloader(SftpDownloaderConfig config) {
+    public SftpDownloader(SftpDownloaderConfig config) throws Exception {
+
+        if (!config.isKnownHostsPresent()){
+            String errorMessage = "SftpDownloaderConfig must have either knownHostsFile or knownHostsString";
+            logger.error(errorMessage);
+            throw new Exception(errorMessage);
+        }
+
         username = config.getUsername();
         password = config.getPassword();
         host = config.getHost();
         port = config.getPort();
-        knownHostsFilePath = config.getKnownHosts();
+        knownHostsFilePath = config.getKnownHostsFile();
         downloadFilePath = SetPath(config.getPath(), config.getFileName());
-        knownHostsString = null;
-    }
-
-    public SftpDownloader(SftpDownloaderConfig config, String knownHostsString) {
-        this(config);
-        knownHostsString = knownHostsString;
+        knownHostsString = config.getKnownHostsString();
     }
 
     public byte[] download() throws IOException, JSchException, SftpException {

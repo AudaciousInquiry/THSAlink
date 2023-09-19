@@ -10,8 +10,9 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Setter
 public class SftpDownloaderConfig {
-    @NotEmpty
-    private String knownHosts;
+
+    private String knownHostsFile;
+    private String knownHostsString;
 
     @NotEmpty
     private String host;
@@ -30,4 +31,10 @@ public class SftpDownloaderConfig {
     private String password;
 
     private String fileName;
+
+    public boolean isKnownHostsPresent() {
+        return (  (knownHostsFile != null && !knownHostsFile.isEmpty()) ||
+                  (knownHostsString != null && !knownHostsString.isEmpty())
+               );
+    }
 }
