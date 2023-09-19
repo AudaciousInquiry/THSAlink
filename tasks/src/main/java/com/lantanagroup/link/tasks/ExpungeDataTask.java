@@ -33,7 +33,7 @@ public class ExpungeDataTask {
             HttpDelete request = new HttpDelete(url);
             request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token));
 
-            HttpExecutorResponse response = HttpExecutor.HttpExecutor(request,logger);
+            HttpExecutorResponse response = HttpExecutor.HttpExecutor(request);
             logger.info("HTTP Response Code {}", response.getResponseCode());
 
             if (response.getResponseCode() != 200) {
