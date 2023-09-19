@@ -1,4 +1,4 @@
-package com.lantanagroup.link.tasks.helpers;
+package com.lantanagroup.link.helpers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;

@@ -125,7 +125,7 @@ public class RefreshPatientListTask {
         request.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         request.setEntity(new StringEntity(fhirContext.newJsonParser().encodeResourceToString(target)));
 
-        HttpExecutorResponse response = HttpExecutor.HttpExecutor(request,logger); //Utility.HttpExecuter(request, logger);
+        HttpExecutorResponse response = HttpExecutor.HttpExecutor(request); //Utility.HttpExecuter(request, logger);
 
         logger.info("HTTP Response Code {}", response.getResponseCode());
     }
