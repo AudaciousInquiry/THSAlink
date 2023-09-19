@@ -8,6 +8,7 @@ import com.jcraft.jsch.SftpException;
 import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.helpers.SftpDownloader;
 import com.lantanagroup.link.model.UploadFile;
 import com.lantanagroup.link.tasks.config.ParklandInventoryImportConfig;
 import org.apache.http.HttpHeaders;
@@ -73,7 +74,7 @@ public class ParklandInventoryImportTask {
             logger.info("File to be downloaded: {}", fileToDownload);
 
             // Download file
-            SftpDownloaderTask downloader = new SftpDownloaderTask(config.getDownloader().get(uploadFile.getType()));
+            SftpDownloader downloader = new SftpDownloader(config.getDownloader().get(uploadFile.getType()));
             byte[] data = downloader.download();
             logger.info("File downloaded, byte size: {}", data.length);
 

@@ -1,7 +1,7 @@
-package com.lantanagroup.link.tasks;
+package com.lantanagroup.link.helpers;
 
 import com.jcraft.jsch.*;
-import com.lantanagroup.link.tasks.config.SftpDownloaderConfig;
+import com.lantanagroup.link.config.SftpDownloaderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SftpDownloaderTask {
+public class SftpDownloader {
     private final String username;
     private final String password;
     private final String host;
@@ -19,9 +19,9 @@ public class SftpDownloaderTask {
     private final String knownHostsFilePath;
     private final String knownHostsString;
     private final String downloadFilePath;
-    private static final Logger logger = LoggerFactory.getLogger(SftpDownloaderTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(SftpDownloader.class);
 
-    public SftpDownloaderTask(SftpDownloaderConfig config) {
+    public SftpDownloader(SftpDownloaderConfig config) {
         username = config.getUsername();
         password = config.getPassword();
         host = config.getHost();
@@ -31,7 +31,7 @@ public class SftpDownloaderTask {
         knownHostsString = null;
     }
 
-    public SftpDownloaderTask(SftpDownloaderConfig config, String knownHostsString) {
+    public SftpDownloader(SftpDownloaderConfig config, String knownHostsString) {
         this(config);
         knownHostsString = knownHostsString;
     }

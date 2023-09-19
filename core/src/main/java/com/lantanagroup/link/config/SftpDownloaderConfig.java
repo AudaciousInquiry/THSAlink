@@ -1,4 +1,4 @@
-package com.lantanagroup.link.tasks.config;
+package com.lantanagroup.link.config;
 
 import lombok.Getter;
 import lombok.Setter;
