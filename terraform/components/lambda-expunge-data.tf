@@ -124,8 +124,8 @@ resource "aws_lambda_function" "expunge-data" {
 
   environment {
     variables = {
-      EXPUNGE_API_URL = "https://thsa1.sanerproject.org:10440/api/data/expunge"
-      SECRET_NAME = aws_secretsmanager_secret.expunge-data.name
+      API_ENDPOINT = "https://thsa1.sanerproject.org:10440/api/data/expunge"
+      API_AUTH_SECRET = aws_secretsmanager_secret.expunge-data.name
     }
   }
 }
