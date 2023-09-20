@@ -16,17 +16,24 @@ public class ExpungeData implements RequestHandler<Void,String> {
         String returnValue = "";
 
         try {
+            logger.info("ExpungeData Lambda - Started");
+
             String secretName = System.getenv("API_AUTH_SECRET");
             Region region = Region.of(System.getenv("AWS_REGION"));
             String expungeApiUrl = System.getenv("API_ENDPOINT");
+            logger.info("Environment Variables Read");
 
             LinkOAuthConfig authConfig = Utility.GetLinkOAuthConfigFromAwsSecrets(region, secretName);
+            logger.info("LinkOAuthConfig Created");
 
             ExpungeDataConfig config = new ExpungeDataConfig();
             config.setApiUrl(expungeApiUrl);
             config.setAuth(authConfig);
+            logger.info("ExpungeDataConfig Created");
 
             ExpungeDataTask.RunExpungeDataTask(config);
+
+            logger.info("ExpungeData Lambda - Completed");
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
