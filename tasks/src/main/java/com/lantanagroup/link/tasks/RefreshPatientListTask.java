@@ -37,6 +37,8 @@ public class RefreshPatientListTask {
     private QueryConfig queryConfig;
 
     public void RunRefreshPatientList(RefreshPatientListConfig config, QueryConfig queryConfig, ApplicationContext applicationContext) {
+        // Read API Auth From Secrets
+
         // Read Query Config From Secrets
 
         // Read RefreshPatientListConfig from Secrets
