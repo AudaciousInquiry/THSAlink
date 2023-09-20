@@ -1,4 +1,5 @@
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.lantanagroup.link.config.auth.LinkOAuthConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -52,5 +53,21 @@ public class Utility {
 
         return new JSONObject(secret);
 
+    }
+
+    public static LinkOAuthConfig GetLinkOAuthConfigFromAwsSecrets(Region region, String secretName) {
+        LinkOAuthConfig authConfig = new LinkOAuthConfig();
+
+        JSONObject secretObject = GetAwsSecretAsJson(region, secretName);
+
+        authConfig.setTokenUrl(secretObject.getString("token-url"));
+        authConfig.setClientId(secretObject.getString("client-id"));
+        authConfig.setClientSecret(secretObject.getString("client-secret"));
+        authConfig.setUsername(secretObject.getString("username"));
+        authConfig.setPassword(secretObject.getString("password"));
+        authConfig.setScope(secretObject.getString("scope"));
+        authConfig.setCredentialMode(secretObject.getString("credential-mode"));
+
+        return authConfig;
     }
 }
