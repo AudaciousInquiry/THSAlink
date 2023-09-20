@@ -1,116 +1,35 @@
 package com.lantanagroup.link.cli;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.lantanagroup.link.auth.OAuth2Helper;
-import com.lantanagroup.link.tasks.ParklandBedCountCsvConverter;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
+import com.lantanagroup.link.tasks.ParklandInventoryImportTask;
+import com.lantanagroup.link.tasks.config.ParklandInventoryImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @ShellComponent
 public class ParklandInventoryImportCommand extends BaseShellCommand {
   private static final Logger logger = LoggerFactory.getLogger(ParklandInventoryImportCommand.class);
 
   private ParklandInventoryImportConfig config;
-  private String fileType;
 
-  @ShellMethod(
-          key = "parkland-inventory-import",
-          value = "Download an inventory via SFTP and submit it to Link.")
+  @ShellMethod(key = "parkland-inventory-import", value = "Download an inventory via SFTP and submit it to Link.")
   public void execute(String fileType, @ShellOption(defaultValue="") String fileName) {
     try {
       logger.info("Parkland Inventory Import ({}} Started", fileType);
-      this.fileType = fileType;
+
       registerBeans();
       config = applicationContext.getBean(ParklandInventoryImportConfig.class);
       validate(config);
       logger.info("Configuration Validated");
 
-      // Check to make sure the downloader & submissionInfo sections
-      // exist for the fileType
-      if (config.getDownloader().get(fileType) == null) {
-        String errorMessage = String.format("parkland-inventory-import.downloader configuration for File Type '%s' is not available.", fileType);
-        logger.error(errorMessage);
-        throw new Exception(errorMessage);
-      }
-      if (config.getSubmissionInfo().get(fileType) == null) {
-        String errorMessage = String.format("parkland-inventory-import.submission-info configuration for File Type '%s' is not available.", fileType);
-        logger.error(errorMessage);
-        throw new Exception(errorMessage);
-      }
+      ParklandInventoryImportTask.RunParklandInventoryImportTask(config, fileType, fileName);
 
-      SetConfigFileName(fileName);
-      byte[] data = download();
-      logger.info("Download Completed");
-
-      byte[] convertedCsvData = ParklandBedCountCsvConverter.ConvertParklandBedCsv(data, config.getSubmissionInfo().get(fileType).getIcuIdentifiers());
-      logger.info("CSV Conversion Complete");
-
-      submit(convertedCsvData);
-      logger.info("CSV Data Submitted To API");
-
-      logger.info("Parkland Inventory Import ({}} Completed", fileType);
     } catch (Exception ex) {
-      logger.error("Parkland Inventory Import Failure: {}", ex.getMessage());
+      logger.error("Parkland Inventory Import execute issue: {}", ex.getMessage());
+      System.exit(1);
     }
-  }
-
-  private byte[] download() throws Exception {
-    byte[] downloadedData;
-    try {
-      SftpDownloader downloader = new SftpDownloader(config.getDownloader().get(fileType));
-      downloadedData = downloader.download();
-    } catch (Exception ex) {
-      logger.error("Issue with download: {}", ex.getMessage());
-      throw new Exception(ex);
-    }
-
-    return downloadedData;
-  }
-
-  private void submit(byte[] data) throws Exception {
-    String submissionUrl = config.getSubmissionInfo().get(fileType).getSubmissionUrl();
-    logger.info("Submitting to {}", submissionUrl);
-
-    HttpPost request = new HttpPost(submissionUrl);
-
-    String token = OAuth2Helper.getToken(config.getSubmissionInfo().get(fileType).getSubmissionAuth());
-    if (OAuth2Helper.validateHeaderJwtToken(token)) {
-      request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token));
-    } else {
-      throw new JWTVerificationException("Invalid token format");
-    }
-
-    request.setEntity(new ByteArrayEntity(data));
-    //HttpResponse response = Utility.HttpExecuter(request, logger);
-    HttpResponse response = Utility.HttpExecutor(request);
-    logger.info("HTTP Response Code {}", response.getStatusLine().getStatusCode());
-  }
-
-  private void SetConfigFileName(String fileName) {
-        /* The Parkland server path will have files named by day.  So...
-      2023-06-04.xlsx
-      2023-06-05.xlsx
-      etc...
-
-      One can run the command and specify a filename, but if that is blank, here we
-      will default to the current date.
-     */
-    if (fileName == null || fileName.trim().isEmpty()){
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-      String today = sdf.format(new Date());
-      fileName = String.format("%s.%s", today, fileType);
-    }
-
-    config.getDownloader().get(fileType).setFileName(fileName);
-
+    System.exit(0);
   }
 }

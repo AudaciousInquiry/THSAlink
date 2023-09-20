@@ -1,5 +1,6 @@
-package com.lantanagroup.link.cli;
+package com.lantanagroup.link.tasks.config;
 
+import com.lantanagroup.link.config.SftpDownloaderConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,11 +15,11 @@ import java.util.HashMap;
 @ConfigurationProperties(prefix = "cli.parkland-inventory-import")
 public class ParklandInventoryImportConfig {
 
-  @Getter
-  @NotNull
-  private HashMap<String, SftpDownloaderConfig> downloader;
-  @Getter
-  @NotNull
-  private HashMap<String, ParklandSubmissionInfo> submissionInfo;
+    @Getter
+    @NotNull
+    private HashMap<String, SftpDownloaderConfig> downloader;
+    @Getter
+    @NotNull
+    private HashMap<String, ParklandSubmissionInfo> submissionInfo;
 
 }
