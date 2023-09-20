@@ -1,4 +1,4 @@
-package com.lantanagroup.link.tasks.helpers;
+package com.lantanagroup.link.helpers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 
 public class HttpExecutor {
-    public static HttpExecutorResponse HttpExecutor(HttpUriRequest request, Logger logger) throws IOException {
+    public static HttpExecutorResponse HttpExecutor(HttpUriRequest request) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpExecutorResponse httpExecutorResponse = new HttpExecutorResponse();
         httpClient.execute(request, response -> {
@@ -20,7 +20,6 @@ public class HttpExecutor {
             if (entity != null) {
                 String body = EntityUtils.toString(entity);
                 if (StringUtils.isNotEmpty(body)) {
-                    //logger.debug(body);
                     httpExecutorResponse.setResponseBody(body);
                 }
             }

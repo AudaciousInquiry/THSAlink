@@ -3,8 +3,8 @@ package com.lantanagroup.link.tasks;
 import ca.uhn.fhir.context.FhirContext;
 import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.tasks.config.ExpungeDataConfig;
-import com.lantanagroup.link.tasks.helpers.HttpExecutor;
-import com.lantanagroup.link.tasks.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.helpers.HttpExecutor;
+import com.lantanagroup.link.helpers.HttpExecutorResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpDelete;
@@ -33,7 +33,7 @@ public class ExpungeDataTask {
             HttpDelete request = new HttpDelete(url);
             request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token));
 
-            HttpExecutorResponse response = HttpExecutor.HttpExecutor(request,logger);
+            HttpExecutorResponse response = HttpExecutor.HttpExecutor(request);
             logger.info("HTTP Response Code {}", response.getResponseCode());
 
             if (response.getResponseCode() != 200) {

@@ -13,8 +13,8 @@ import com.lantanagroup.link.config.query.QueryConfig;
 import com.lantanagroup.link.query.auth.HapiFhirAuthenticationInterceptor;
 import com.lantanagroup.link.tasks.config.CensusReportingPeriods;
 import com.lantanagroup.link.tasks.config.RefreshPatientListConfig;
-import com.lantanagroup.link.tasks.helpers.HttpExecutor;
-import com.lantanagroup.link.tasks.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.helpers.HttpExecutor;
+import com.lantanagroup.link.helpers.HttpExecutorResponse;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -125,7 +125,7 @@ public class RefreshPatientListTask {
         request.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         request.setEntity(new StringEntity(fhirContext.newJsonParser().encodeResourceToString(target)));
 
-        HttpExecutorResponse response = HttpExecutor.HttpExecutor(request,logger); //Utility.HttpExecuter(request, logger);
+        HttpExecutorResponse response = HttpExecutor.HttpExecutor(request); //Utility.HttpExecuter(request, logger);
 
         logger.info("HTTP Response Code {}", response.getResponseCode());
     }

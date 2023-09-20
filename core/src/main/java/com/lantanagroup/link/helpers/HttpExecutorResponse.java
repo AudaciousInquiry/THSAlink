@@ -1,4 +1,4 @@
-package com.lantanagroup.link.tasks.helpers;
+package com.lantanagroup.link.helpers;
 
 import lombok.Getter;
 import lombok.Setter;
