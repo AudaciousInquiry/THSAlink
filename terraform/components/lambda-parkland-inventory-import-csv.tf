@@ -58,6 +58,24 @@ resource "aws_iam_role" "parkland-inventory-import-csv" {
       ]
     })
   }
+
+  inline_policy {
+    name = "CreateNetworkInterface"
+    policy = jsonencode({
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ec2:CreateNetworkInterface",
+            "ec2:DeleteNetworkInterface",
+            "ec2:DescribeNetworkInterfaces"
+          ],
+          "Resource": "*"
+        }
+      ]
+    })
+  }
 }
 
 resource "aws_iam_role" "parkland-inventory-import-csv-lambda-scheduler-role" {
@@ -115,26 +133,31 @@ resource "aws_lambda_function" "parkland-inventory-import-csv" {
   timeout = 300
   s3_bucket = data.terraform_remote_state.infra.outputs.lambda_deploy_bucket.bucket
   s3_key = module.lambda-jar.s3-file.key
+  s3_object_version = module.lambda-jar.s3-file.version_id
 
   tags = {
     Environment = var.environment,
     CreatedBy = "terraform"
   }
 
+  vpc_config {
+    security_group_ids = var.security_groups
+    subnet_ids         = var.subnets
+  }
+
   environment {
     variables = {
       API_AUTH_SECRET = aws_secretsmanager_secret.api-authentication.name
       PARKLAND_SFTP_SECRET = aws_secretsmanager_secret.parkland-sftp.name
-      DOWNLOAD_FILE_NAME = "THSA_Saner_Bed_List20230918.csv"
-      DOWNLOAD_FILE_PATH = "E/AustinM/thsalink/parkland/"
+      DOWNLOAD_FILE_NAME = ""
+      DOWNLOAD_FILE_PATH = "THSA-SANER/"
       DOWNLOAD_FILE_TYPE = "csv"
       API_ENDPOINT = "https://thsa1.sanerproject.org:10440/api/data/file"
-      ICU_CODES = "ICU,PCU"
+      ICU_CODES = "ICU"
     }
   }
 }
 
-/*
 resource "aws_scheduler_schedule" "parkland-inventory-import-csv" {
   name = "${var.environment}-${var.customer}-${var.project_code}-parkland-inventory-import-csv-lambda"
   group_name = "default"
@@ -143,7 +166,7 @@ resource "aws_scheduler_schedule" "parkland-inventory-import-csv" {
     mode = "OFF"
   }
 
-  schedule_expression = "rate(5 minutes)"
+  schedule_expression = "rate(1 days)"
 
   target {
     arn      = aws_lambda_function.parkland-inventory-import-csv.arn
@@ -159,4 +182,3 @@ resource "aws_lambda_permission" "parkland-inventory-import-csv" {
   principal     = "events.amazonaws.com"
   source_arn = aws_scheduler_schedule.parkland-inventory-import-csv.arn
 }
-*/

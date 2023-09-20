@@ -12,7 +12,7 @@ module "ecs-task-parkland-csv" {
   # TFVARS
   image_repository = var.docker_image_repository
   image_name = "thsa-link-cli-parkland-csv"
-  image_tag = "THSALINK-020_7"//var.default_docker_tag
+  image_tag = var.default_docker_tag
   ecs_task_role = data.terraform_remote_state.infra.outputs.iam-role-arn
 
   container_environment_file = jsonencode([])
@@ -32,6 +32,7 @@ module "ecs-task-parkland-csv" {
   volume_root_directory = "/cli"
 }
 
+/*
 resource "aws_scheduler_schedule" "parkland-csv-schedule" {
   name = "${var.environment}-${var.customer}-${var.project_code}-parkland-csv"
   group_name = "default"
@@ -60,3 +61,4 @@ resource "aws_scheduler_schedule" "parkland-csv-schedule" {
     }
   }
 }
+*/
