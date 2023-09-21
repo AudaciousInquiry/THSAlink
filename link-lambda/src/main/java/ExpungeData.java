@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 
+//aws ecr-public get-login-password --region us-east-1 --profile starhie | docker login --username AWS --password-stdin public.ecr.aws/lambda/java
 public class ExpungeData implements RequestHandler<Void,String> {
 
     private static final Logger logger = LoggerFactory.getLogger(ExpungeDataTask.class);
