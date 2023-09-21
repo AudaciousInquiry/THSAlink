@@ -11,6 +11,11 @@ public class TokenAuth implements ICustomAuth {
   private TokenAuthConfig config;
 
   @Override
+  public void setConfig(ICustomAuthConfig authConfig) throws Exception {
+    config = (TokenAuthConfig) authConfig;
+  }
+
+  @Override
   public String getAuthHeader() {
     return this.config.getToken();
   }

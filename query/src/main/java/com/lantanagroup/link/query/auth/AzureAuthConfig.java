@@ -12,7 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ConfigurationProperties(prefix = "query.auth.azure")
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
-public class AzureAuthConfig {
+public class AzureAuthConfig implements ICustomAuthConfig {
   private String tokenUrl;
   private String clientId;
   private String secret;

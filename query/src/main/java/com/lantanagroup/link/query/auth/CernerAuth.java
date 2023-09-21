@@ -15,6 +15,11 @@ public class CernerAuth implements ICustomAuth {
   private CernerAuthConfig config;
 
   @Override
+  public void setConfig(ICustomAuthConfig authConfig) throws Exception {
+    config = (CernerAuthConfig) authConfig;
+  }
+
+  @Override
   public String getAuthHeader() {
     logger.debug("Using OAuth2 to retrieve a system token for FHIR authentication");
     String token = OAuth2Helper.getClientCredentialsToken(
