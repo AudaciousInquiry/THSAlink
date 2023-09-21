@@ -22,7 +22,7 @@ public class ExpungeDataTask {
             throw new Exception("Issue with expunge-data configuration");
         }
 
-        String url = config.getApiUrl() + "/data/expunge";
+        String url = config.getApiUrl();
         logger.info("Calling API Expunge Data at {}", url);
 
         try {

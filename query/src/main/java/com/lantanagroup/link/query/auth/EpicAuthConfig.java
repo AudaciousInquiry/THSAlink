@@ -12,7 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ConfigurationProperties(prefix = "query.auth.epic")
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
-public class EpicAuthConfig {
+public class EpicAuthConfig implements ICustomAuthConfig {
   private String key;
   private String tokenUrl;
   private String clientId;

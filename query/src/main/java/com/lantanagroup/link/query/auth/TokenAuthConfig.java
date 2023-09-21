@@ -12,6 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ConfigurationProperties(prefix = "query.auth.token")
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
-public class TokenAuthConfig {
+public class TokenAuthConfig implements ICustomAuthConfig {
   private String token;
 }
