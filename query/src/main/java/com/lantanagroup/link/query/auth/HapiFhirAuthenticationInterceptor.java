@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 @Interceptor
 public class HapiFhirAuthenticationInterceptor {
@@ -34,6 +35,25 @@ public class HapiFhirAuthenticationInterceptor {
     logger.debug(String.format("Getting an instance of the auth class \"%s\" from Spring", queryConfig.getAuthClass()));
     authorizer = (ICustomAuth) context.getBean(authClass);
     refresh();
+  }
+
+  public HapiFhirAuthenticationInterceptor(QueryConfig queryConfig, ICustomAuthConfig authConfig) throws Exception {
+    if (StringUtils.isEmpty(queryConfig.getAuthClass())) {
+      authorizer = null;
+      return;
+    }
+
+    // Get the Class definition of the auth class specified in config
+    Class<?> authClass = Class.forName(queryConfig.getAuthClass());
+    Object authObject = authClass.newInstance();
+
+    // Setup and call method to pass configuration
+    Method setConfigMethod = authClass.getMethod("setConfig", ICustomAuthConfig.class);
+    setConfigMethod.invoke(authObject, authConfig);
+
+    authorizer = (ICustomAuth) authObject;
+    refresh();
+
   }
 
   private void refresh() {

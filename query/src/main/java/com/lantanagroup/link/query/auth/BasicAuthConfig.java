@@ -12,7 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ConfigurationProperties(prefix = "query.auth.basic")
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
-public class BasicAuthConfig {
+public class BasicAuthConfig implements ICustomAuthConfig {
   private String username;
   private String password;
 }

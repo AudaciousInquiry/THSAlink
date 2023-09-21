@@ -39,8 +39,8 @@
         <module>thsa</module>
         <module>nhsn</module>
         <module>mhl</module>
-        <module>link-lambda</module>
         <module>tasks</module>
+        <module>link-lambda</module>
     </modules>
 
     <dependencies>
