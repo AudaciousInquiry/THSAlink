@@ -53,6 +53,15 @@ resource "aws_ecs_service" "ecs_service" {
                     port = var.container_port
                 }
             }
+            log_configuration {
+                log_driver = "awslogs"
+                options = {
+                    awslogs-group = "/ecs-serviceconnect/"
+                    awslogs-region = var.aws_region
+                    awslogs-create-group = true
+                    awslogs-stream-prefix = "${var.environment}-${var.customer}-${var.project_code}-${var.application_code}"
+                }
+            }
         }
     }
     tags = {
