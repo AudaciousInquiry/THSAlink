@@ -62,6 +62,11 @@ public class EpicAuth implements ICustomAuth {
   }
 
   @Override
+  public void setConfig(ICustomAuthConfig authConfig) throws Exception {
+    config = (EpicAuthConfig) authConfig;
+  }
+
+  @Override
   public String getAuthHeader() throws URISyntaxException {
     logger.debug("Generating JWT to request auth token from Epic");
 

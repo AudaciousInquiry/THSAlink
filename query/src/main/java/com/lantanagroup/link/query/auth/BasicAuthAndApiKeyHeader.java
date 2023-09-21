@@ -14,6 +14,11 @@ public class BasicAuthAndApiKeyHeader implements ICustomAuth{
   private BasicAuthAndApiKeyHeaderConfig config;
 
   @Override
+  public void setConfig(ICustomAuthConfig authConfig) throws Exception {
+    config = (BasicAuthAndApiKeyHeaderConfig) authConfig;
+  }
+
+  @Override
   public String getAuthHeader() {
     String username = this.config.getUsername();
     String password = this.config.getPassword();

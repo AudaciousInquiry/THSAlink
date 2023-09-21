@@ -1,5 +1,7 @@
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.lantanagroup.link.config.auth.LinkOAuthConfig;
+import com.lantanagroup.link.config.query.QueryConfig;
+import com.lantanagroup.link.query.auth.EpicAuthConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -67,6 +69,30 @@ public class Utility {
         authConfig.setPassword(secretObject.getString("password"));
         authConfig.setScope(secretObject.getString("scope"));
         authConfig.setCredentialMode(secretObject.getString("credential-mode"));
+
+        return authConfig;
+    }
+
+    public static QueryConfig GetQueryConfigFromAwsSecrets(Region region, String secretName) {
+        QueryConfig queryConfig = new QueryConfig();
+
+        JSONObject secretObject = GetAwsSecretAsJson(region, secretName);
+
+        queryConfig.setQueryClass(secretObject.getString("query-class"));
+        queryConfig.setAuthClass(secretObject.getString("auth-class"));
+
+        return queryConfig;
+    }
+
+    public static EpicAuthConfig GetEpicAuthConfigFromAwsSecrets(Region region, String secretName) {
+        EpicAuthConfig authConfig = new EpicAuthConfig();
+
+        JSONObject secretObject = GetAwsSecretAsJson(region, secretName);
+
+        authConfig.setAudience(secretObject.getString("audience"));
+        authConfig.setKey(secretObject.getString("key"));
+        authConfig.setClientId(secretObject.getString("client-id"));
+        authConfig.setTokenUrl(secretObject.getString("token-url"));
 
         return authConfig;
     }
