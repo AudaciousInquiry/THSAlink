@@ -12,6 +12,11 @@ public class BasicAuth implements ICustomAuth {
   private BasicAuthConfig config;
 
   @Override
+  public void setConfig(ICustomAuthConfig authConfig) throws Exception {
+    config = (BasicAuthConfig) authConfig;
+  }
+
+  @Override
   public String getAuthHeader() {
     String username = this.config.getUsername();
     String password = this.config.getPassword();

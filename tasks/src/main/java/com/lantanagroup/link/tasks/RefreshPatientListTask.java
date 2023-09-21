@@ -10,47 +10,81 @@ import com.lantanagroup.link.FhirContextProvider;
 import com.lantanagroup.link.Helper;
 import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.config.query.QueryConfig;
-import com.lantanagroup.link.query.auth.HapiFhirAuthenticationInterceptor;
-import com.lantanagroup.link.tasks.config.CensusReportingPeriods;
-import com.lantanagroup.link.tasks.config.RefreshPatientListConfig;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.query.auth.HapiFhirAuthenticationInterceptor;
+import com.lantanagroup.link.query.auth.ICustomAuthConfig;
+import com.lantanagroup.link.tasks.config.CensusReportingPeriods;
+import com.lantanagroup.link.tasks.config.RefreshPatientListConfig;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.hl7.fhir.r4.model.ListResource;
 import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 public class RefreshPatientListTask {
 
     private static final Logger logger = LoggerFactory.getLogger(RefreshPatientListTask.class);
-    private final FhirContext fhirContext = FhirContextProvider.getFhirContext();
-    private RefreshPatientListConfig config;
-    private QueryConfig queryConfig;
 
-    public void RunRefreshPatientList(RefreshPatientListConfig config, QueryConfig queryConfig, ApplicationContext applicationContext) {
-        // Read API Auth From Secrets
+    public static void RunRefreshPatientList(RefreshPatientListConfig config, QueryConfig queryConfig, ICustomAuthConfig authConfig) throws Exception {
 
-        // Read Query Config From Secrets
-
-        // Read RefreshPatientListConfig from Secrets
+        try {
+            HapiFhirAuthenticationInterceptor interceptor = new HapiFhirAuthenticationInterceptor(queryConfig, authConfig);
+            execute(config, queryConfig, interceptor);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            throw ex;
+        }
     }
 
-    private ListResource readList(String patientListId, ApplicationContext applicationContext) throws ClassNotFoundException {
+    public static void RunRefreshPatientList(RefreshPatientListConfig config, QueryConfig queryConfig, ApplicationContext applicationContext) throws Exception {
+        try {
+            HapiFhirAuthenticationInterceptor interceptor = new HapiFhirAuthenticationInterceptor(queryConfig, applicationContext);
+            execute(config, queryConfig, interceptor);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    private static void execute(RefreshPatientListConfig config, QueryConfig queryConfig, HapiFhirAuthenticationInterceptor interceptor) throws Exception {
+        try {
+            List<RefreshPatientListConfig.PatientList> filteredList = config.getPatientList();
+
+            for (RefreshPatientListConfig.PatientList listResource : filteredList) {
+                logger.info("Reading List - {}", listResource.getPatientListPath());
+                ListResource source = readList(config, listResource.getPatientListPath(), interceptor);
+                logger.info("List has {} items", source.getEntry().size());
+                for (int j = 0; j < listResource.getCensusIdentifier().size(); j++) {
+                    ListResource target = transformList(config, source, listResource.getCensusIdentifier().get(j));
+                    updateList(config, target);
+                }
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    private static ListResource readList(RefreshPatientListConfig config, String patientListId, HapiFhirAuthenticationInterceptor interceptor) throws ClassNotFoundException {
+
+        FhirContext fhirContext = FhirContextProvider.getFhirContext();
         fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+
         IGenericClient client = fhirContext.newRestfulGenericClient(config.getFhirServerBase());
         if (client instanceof BaseClient) {
             ((BaseClient) client).setKeepResponses(true);
         }
-        client.registerInterceptor(new HapiFhirAuthenticationInterceptor(queryConfig, applicationContext));
+        client.registerInterceptor(interceptor);
         ListResource r = client.fetchResourceFromUrl(ListResource.class, patientListId);
         if (r != null) {
             return r;
@@ -59,11 +93,11 @@ public class RefreshPatientListTask {
         }
     }
 
-    private ListResource transformList(ListResource source, String censusIdentifier) throws URISyntaxException {
+    private static ListResource transformList(RefreshPatientListConfig config, ListResource source, String censusIdentifier) throws URISyntaxException {
         logger.info("Transforming List");
         ListResource target = new ListResource();
         Period period = new Period();
-        CensusReportingPeriods reportingPeriod = this.config.getCensusReportingPeriod();
+        CensusReportingPeriods reportingPeriod = config.getCensusReportingPeriod();
         if (reportingPeriod == null) {
             reportingPeriod = CensusReportingPeriods.Day;
         }
@@ -94,7 +128,7 @@ public class RefreshPatientListTask {
         return target;
     }
 
-    private ListResource.ListEntryComponent transformListEntry(ListResource.ListEntryComponent source, URI baseUrl)
+    private static ListResource.ListEntryComponent transformListEntry(ListResource.ListEntryComponent source, URI baseUrl)
             throws URISyntaxException {
         ListResource.ListEntryComponent target = source.copy();
         if (target.getItem().hasReference()) {
@@ -106,9 +140,12 @@ public class RefreshPatientListTask {
         return target;
     }
 
-    private void updateList(ListResource target) throws Exception {
-        String url = String.format("%s/poi/fhir/PatientList", config.getApiUrl());
+    private static void updateList(RefreshPatientListConfig config, ListResource target) throws Exception {
+        String url = config.getApiUrl();
         logger.info("Submitting to {}", url);
+
+        FhirContext fhirContext = FhirContextProvider.getFhirContext();
+
         HttpPost request = new HttpPost(url);
         if (config.getAuth() != null && config.getAuth().getCredentialMode() != null) {
             String token = OAuth2Helper.getToken(config.getAuth());
@@ -127,8 +164,17 @@ public class RefreshPatientListTask {
         request.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         request.setEntity(new StringEntity(fhirContext.newJsonParser().encodeResourceToString(target)));
 
-        HttpExecutorResponse response = HttpExecutor.HttpExecutor(request); //Utility.HttpExecuter(request, logger);
+        HttpExecutorResponse response = HttpExecutor.HttpExecutor(request);
 
         logger.info("HTTP Response Code {}", response.getResponseCode());
+
+        if (response.getResponseCode() != 200) {
+            // Didn't get success status from API
+            throw new Exception(String.format("Expecting HTTP Status Code 200 from API, received %s", response.getResponseCode()));
+        }
+
+        Task task = fhirContext.newJsonParser().parseResource(Task.class, response.getResponseBody());
+
+        logger.info("API has started Patient List Load Task with ID {}", task.getId());
     }
 }

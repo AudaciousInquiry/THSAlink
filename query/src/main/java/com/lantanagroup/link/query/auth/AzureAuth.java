@@ -18,6 +18,11 @@ public class AzureAuth implements ICustomAuth {
   private AzureAuthConfig config;
 
   @Override
+  public void setConfig(ICustomAuthConfig authConfig) throws Exception {
+    config = (AzureAuthConfig) authConfig;
+  }
+
+  @Override
   public String getAuthHeader() throws Exception {
     String requestBody = String.format(
             "grant_type=client_credentials&client_id=%s&client_secret=%s&resource=%s",

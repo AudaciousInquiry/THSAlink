@@ -4,7 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.impl.BaseClient;
-
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lantanagroup.link.Constants;
 import com.lantanagroup.link.FhirContextProvider;
@@ -14,6 +13,7 @@ import com.lantanagroup.link.config.query.QueryConfig;
 import com.lantanagroup.link.query.auth.EpicAuth;
 import com.lantanagroup.link.query.auth.EpicAuthConfig;
 import com.lantanagroup.link.query.auth.HapiFhirAuthenticationInterceptor;
+import com.lantanagroup.link.tasks.RefreshPatientListTask;
 import com.lantanagroup.link.tasks.config.CensusReportingPeriods;
 import com.lantanagroup.link.tasks.config.RefreshPatientListConfig;
 import org.apache.http.HttpHeaders;
@@ -56,17 +56,20 @@ public class RefreshPatientListCommand extends BaseShellCommand {
     config = applicationContext.getBean(RefreshPatientListConfig.class);
     queryConfig = applicationContext.getBean(QueryConfig.class);
 
-    List<RefreshPatientListConfig.PatientList> filteredList = config.getPatientList();
+    RefreshPatientListTask.RunRefreshPatientList(config, queryConfig, applicationContext);
 
-    for (RefreshPatientListConfig.PatientList listResource : filteredList) {
-      logger.info("Reading List - {}", listResource.getPatientListPath());
-      ListResource source = readList(listResource.getPatientListPath());
-      logger.info("List has {} items", source.getEntry().size());
-      for (int j = 0; j < listResource.getCensusIdentifier().size(); j++) {
-        ListResource target = transformList(source, listResource.getCensusIdentifier().get(j));
-        updateList(target);
-      }
-    }
+
+//    List<RefreshPatientListConfig.PatientList> filteredList = config.getPatientList();
+//
+//    for (RefreshPatientListConfig.PatientList listResource : filteredList) {
+//      logger.info("Reading List - {}", listResource.getPatientListPath());
+//      ListResource source = readList(listResource.getPatientListPath());
+//      logger.info("List has {} items", source.getEntry().size());
+//      for (int j = 0; j < listResource.getCensusIdentifier().size(); j++) {
+//        ListResource target = transformList(source, listResource.getCensusIdentifier().get(j));
+//        updateList(target);
+//      }
+//    }
   }
 
   private ListResource readList(String patientListId) throws ClassNotFoundException {
