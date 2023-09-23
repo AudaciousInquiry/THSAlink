@@ -8,6 +8,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 import javax.validation.*;
 import java.util.ArrayList;
@@ -17,6 +18,9 @@ import java.util.Set;
 public class BaseShellCommand {
   @Autowired
   protected ApplicationContext applicationContext;
+
+  @Autowired
+  protected Environment env;
 
   protected List<Class<?>> getBeanClasses() {
     return new ArrayList<>();

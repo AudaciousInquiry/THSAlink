@@ -81,3 +81,17 @@ resource "aws_secretsmanager_secret_version" "parkland-refresh-patient-list" {
   secret_id = aws_secretsmanager_secret.parkland-refresh-patient-list.id
   secret_string = file("../environment-files/secrets/parkland-refresh-patient-list.json")
 }
+
+# Generate Report
+resource "aws_secretsmanager_secret" "generate-report" {
+  name = "${var.environment}-${var.customer}-${var.project_code}-generate-report"
+  tags = {
+    Environment = var.environment,
+    CreatedBy = "terraform"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "generate-report" {
+  secret_id = aws_secretsmanager_secret.generate-report.id
+  secret_string = file("../environment-files/secrets/generate-report.json")
+}
