@@ -138,9 +138,9 @@ public class ReportController extends BaseController {
   }
 
   @PostMapping("/$generate")
-  public ResponseEntity<?> newGenerateReport(@AuthenticationPrincipal LinkCredentials user,
-                                             HttpServletRequest request,
-                                             @RequestBody GenerateRequest input) {
+  public ResponseEntity<?> generateReport(@AuthenticationPrincipal LinkCredentials user,
+                                          HttpServletRequest request,
+                                          @RequestBody GenerateRequest input) {
 
     if (input.getBundleIds().length < 1) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("At least one bundleId should be specified.");
@@ -154,24 +154,6 @@ public class ReportController extends BaseController {
     executor.submit(() -> generateResponse(user, request, input.getBundleIds(), input.getPeriodStart(), input.getPeriodEnd(), input.isRegenerate(), response.getId()));
 
     return ResponseEntity.ok(response);
-  }
-
-  @PostMapping("/$oldgenerate")
-  public GenerateResponse generateReport(
-          @AuthenticationPrincipal LinkCredentials user,
-          HttpServletRequest request,
-          @RequestBody GenerateRequest input)
-          throws Exception {
-
-    if (input.getBundleIds().length < 1) {
-      throw new IllegalStateException("At least one bundleId should be specified.");
-    }
-
-    Task response = TaskHelper.getNewTask(user, Constants.GENERATE_REPORT);
-    FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(response);
-
-    return generateResponse(user, request, input.getBundleIds(), input.getPeriodStart(), input.getPeriodEnd(), input.isRegenerate(), response.getId());
   }
 
   /**

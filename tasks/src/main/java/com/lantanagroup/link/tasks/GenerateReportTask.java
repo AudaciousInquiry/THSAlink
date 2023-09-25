@@ -19,13 +19,13 @@ import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GenerateReport {
-    private static final Logger logger = LoggerFactory.getLogger(GenerateReport.class);
+public class GenerateReportTask {
+    private static final Logger logger = LoggerFactory.getLogger(GenerateReportTask.class);
 
     public static void executeTask(GenerateReportConfig config) throws Exception {
         try {
 
-            logger.info("GenerateReport executeTask - Started");
+            logger.info("GenerateReportTask executeTask - Started");
 
             HttpPost request = new HttpPost(config.getApiUrl());
 
@@ -70,10 +70,10 @@ public class GenerateReport {
             Task task = fhirContext.newJsonParser().parseResource(Task.class, response.getResponseBody());
             logger.info("API has started Generate Report Task with ID {}", task.getId());
 
-            logger.info("GenerateReport executeTask - Completed");
+            logger.info("GenerateReportTask executeTask - Completed");
 
         } catch (Exception ex) {
-            logger.error("Error with Generate Report - {}", ex.getMessage());
+            logger.error("Error with GenerateReportTask - {}", ex.getMessage());
             throw ex;
         }
     }

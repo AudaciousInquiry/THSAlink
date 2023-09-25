@@ -24,12 +24,12 @@ import java.util.*;
 
 
 @ShellComponent
-public class GenerateAndSubmitCommand extends BaseShellCommand {
-  private static final Logger logger = LoggerFactory.getLogger(GenerateAndSubmitCommand.class);
+public class OldGenerateAndSubmitCommand extends BaseShellCommand {
+  private static final Logger logger = LoggerFactory.getLogger(OldGenerateAndSubmitCommand.class);
 
   @Setter
   @Getter
-  private GenerateAndSubmitConfig configInfo;
+  private OldGenerateAndSubmitConfig configInfo;
 
   public static Calendar getAdjustedCalendar(int adjustDays, int adjustMonths) {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -65,7 +65,7 @@ public class GenerateAndSubmitCommand extends BaseShellCommand {
   @ShellMethod("generate-and-submit")
   public void generateAndSubmit() throws IOException {
     registerBeans();
-    configInfo = applicationContext.getBean(GenerateAndSubmitConfig.class);
+    configInfo = applicationContext.getBean(OldGenerateAndSubmitConfig.class);
 
     CloseableHttpClient client = HttpClientBuilder.create().build();
     try {
