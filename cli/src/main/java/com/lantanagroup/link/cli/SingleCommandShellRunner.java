@@ -17,13 +17,14 @@ public class SingleCommandShellRunner implements ApplicationRunner {
   private final Shell shell;
   private final List<String> commands = List.of(
           "query",
-          "generate-and-submit",
           "knox-measure-report-transfer",
           "refresh-patient-list",
           "parkland-inventory-import",
           "manual-bed-inventory",
           "expunge-data",
-          "manual-expunge");
+          "manual-expunge",
+          "generate-report",
+          "austin-tester");
 
   public SingleCommandShellRunner(Shell shell, ConfigurableEnvironment environment) {
     this.shell = shell;

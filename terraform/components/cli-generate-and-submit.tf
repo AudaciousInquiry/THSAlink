@@ -32,6 +32,7 @@ module "ecs-task-generate-and-submit" {
   volume_root_directory = "/cli"
 }
 
+/*
 resource "aws_scheduler_schedule" "generate-and-submit-schedule" {
   name = "${var.environment}-${var.customer}-${var.project_code}-generate-and-submit"
   group_name = "default"
@@ -60,3 +61,4 @@ resource "aws_scheduler_schedule" "generate-and-submit-schedule" {
     }
   }
 }
+*/
