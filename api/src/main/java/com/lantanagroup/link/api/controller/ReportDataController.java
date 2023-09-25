@@ -1,13 +1,12 @@
 package com.lantanagroup.link.api.controller;
 
-import com.lantanagroup.link.*;
 import com.lantanagroup.link.Constants;
+import com.lantanagroup.link.*;
 import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.config.datagovernance.DataGovernanceConfig;
 import com.lantanagroup.link.config.query.USCoreConfig;
 import com.lantanagroup.link.config.query.USCoreOtherResourceTypeConfig;
 import com.lantanagroup.link.model.ExpungeResourcesToDelete;
-import com.lantanagroup.link.model.ExpungeResponse;
 import com.lantanagroup.link.model.UploadFile;
 import lombok.Getter;
 import lombok.Setter;
@@ -189,6 +188,7 @@ public class ReportDataController extends BaseController {
     } catch (Exception ex) {
       logger.error("Manual Expunge Error - {} (Task ID: {}", ex.getMessage(), taskId);
       Annotation note = new Annotation();
+      note.setTime(new Date());
       note.setText(String.format("Issue With Data Expunge: %s", ex.getMessage()));
       task.setNote(Arrays.asList(note));
       task.setStatus(Task.TaskStatus.FAILED);
@@ -310,6 +310,7 @@ public class ReportDataController extends BaseController {
     } catch (Exception ex) {
       logger.error("Data Expunge Issue: {} (Task ID: {})", ex.getMessage(), taskId);
       Annotation note = new Annotation();
+      note.setTime(new Date());
       note.setText(String.format("Issue With Data Expunge: %s", ex.getMessage()));
       task.setNote(Arrays.asList(note));
       task.setStatus(Task.TaskStatus.FAILED);

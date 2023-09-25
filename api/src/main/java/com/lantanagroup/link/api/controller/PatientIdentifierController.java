@@ -136,12 +136,14 @@ public class PatientIdentifierController extends BaseController {
 
       task.setStatus(Task.TaskStatus.COMPLETED);
       Annotation note = new Annotation();
+      note.setTime(new Date());
       note.setText(String.format("Patient List with %s entries has been stored.", list.getEntry().size()));
       task.addNote(note);
 
     } catch (Exception ex) {
       logger.error("Patient List Processing Issue: {} (Task ID: {})", ex.getMessage(), taskId);
       Annotation note = new Annotation();
+      note.setTime(new Date());
       note.setText(String.format("Issue With Patient List Processing: %s", ex.getMessage()));
       task.setNote(List.of(note));
       task.setStatus(Task.TaskStatus.FAILED);
