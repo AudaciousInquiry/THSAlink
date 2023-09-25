@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
@@ -95,5 +96,15 @@ public class Utility {
         authConfig.setTokenUrl(secretObject.getString("token-url"));
 
         return authConfig;
+    }
+
+    public static String[] toStringArray(JSONArray input) {
+        String [] returnVal = new String[input.length()];
+
+        for (int i = 0; i < input.length(); i++) {
+            returnVal[i] = input.getString(i);
+        }
+
+        return returnVal;
     }
 }

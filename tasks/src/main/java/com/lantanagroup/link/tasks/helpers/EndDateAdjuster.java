@@ -10,6 +10,15 @@ import java.util.Calendar;
 @Setter
 @Configuration
 public class EndDateAdjuster extends DateAdjuster {
+
+    public EndDateAdjuster() {
+        super();
+    }
+
+    public EndDateAdjuster(int adjustDays, int adjustMonths, boolean dateEdge) {
+        super(adjustDays, adjustMonths, dateEdge);
+    }
+
     protected void SetDateEdge() {
         super.SetDateEdge();
         if (dateEdge) {
