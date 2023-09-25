@@ -18,11 +18,11 @@ import javax.validation.constraints.Size;
 @ConfigurationProperties(prefix = "cli.generate-and-submit")
 @Validated
 @PropertySource(value = "classpath:application.yml", factory = YamlPropertySourceFactory.class)
-public class GenerateAndSubmitConfig {
+public class OldGenerateAndSubmitConfig {
 
   private String apiUrl;
-  private GenerateAndSubmitPeriodStart periodStart;
-  private GenerateAndSubmitPeriodEnd periodEnd;
+  private OldGenerateAndSubmitPeriodStart periodStart;
+  private OldGenerateAndSubmitPeriodEnd periodEnd;
   private LinkOAuthConfig auth;
   @NotNull
   @Size(min = 1)
@@ -31,7 +31,7 @@ public class GenerateAndSubmitConfig {
 
 @Getter
 @Setter
-class GenerateAndSubmitPeriodStart {
+class OldGenerateAndSubmitPeriodStart {
 
   private int adjustDay;
   private int adjustMonth;
@@ -40,7 +40,7 @@ class GenerateAndSubmitPeriodStart {
 
 @Getter
 @Setter
-class GenerateAndSubmitPeriodEnd {
+class OldGenerateAndSubmitPeriodEnd {
 
   private int adjustDay;
   private int adjustMonth;

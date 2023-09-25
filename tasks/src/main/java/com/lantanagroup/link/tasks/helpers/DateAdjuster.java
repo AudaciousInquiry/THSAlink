@@ -19,6 +19,14 @@ public class DateAdjuster {
     protected boolean dateEdge;
     protected Calendar calendar;
 
+    public DateAdjuster() {}
+
+    public DateAdjuster(int adjustDays, int adjustMonths, boolean dateEdge) {
+        this.adjustDays = adjustDays;
+        this.adjustMonths = adjustMonths;
+        this.dateEdge = dateEdge;
+    }
+
     public Date Date() {
         setCalendar();
         return calendar.getTime();

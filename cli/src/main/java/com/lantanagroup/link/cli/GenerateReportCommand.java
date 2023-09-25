@@ -1,6 +1,6 @@
 package com.lantanagroup.link.cli;
 
-import com.lantanagroup.link.tasks.GenerateReport;
+import com.lantanagroup.link.tasks.GenerateReportTask;
 import com.lantanagroup.link.tasks.config.GenerateReportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class GenerateReportCommand extends BaseShellCommand {
             registerBeans();
             GenerateReportConfig config = applicationContext.getBean(GenerateReportConfig.class);
 
-            GenerateReport.executeTask(config);
+            GenerateReportTask.executeTask(config);
 
             logger.info("GenerateReport - CLI - Completed");
 
