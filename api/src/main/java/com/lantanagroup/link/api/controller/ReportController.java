@@ -760,7 +760,8 @@ public class ReportController extends BaseController {
           @RequestParam(required = false) String periodStartDate,
           @RequestParam(required = false) String periodEndDate,
           @RequestParam(required = false) String docStatus,
-          @RequestParam(required = false) String submittedDate)
+          @RequestParam(required = false) String submittedDate,
+          @RequestParam(required = false) String submitted)
           throws Exception {
 
     Bundle bundle;
@@ -800,7 +801,35 @@ public class ReportController extends BaseController {
         url += "&";
       }
       url += "docStatus=" + docStatus.toLowerCase();
+      andCond = true;
     }
+
+    Boolean submittedBoolean = null;
+    if (submitted != null) {
+      submittedBoolean = Boolean.parseBoolean(submitted);
+    }
+
+    if (Boolean.TRUE.equals(submittedBoolean)) {
+      // We want to find documents that have been submitted.  Which
+      // should mean that docStatus = final and the date isn't null.
+      // All we can do here is search for docStatus = final then later
+      // also verify that the date has a value.
+      if (andCond) {
+        url += "&";
+      }
+      url += "docStatus=final";
+      andCond = true;
+    } else if (Boolean.FALSE.equals(submittedBoolean)) {
+      // We want to fnd documents that HAVE NOT been submitted.  Which
+      // should mean that docStatus <> final and that the date field is
+      // either missing or set to null.  Which we have to check later.
+      if (andCond) {
+        url += "&";
+      }
+      url += "_filter=docStatus+ne+final";
+      andCond = true;
+    }
+
     if (submittedDate != null) {
       if (andCond) {
         url += "&";
@@ -811,9 +840,23 @@ public class ReportController extends BaseController {
       url += "date=ge" + submittedDate + "&date=le" + theDayAfterSubmittedDateEndAsString;
     }
 
-
     bundle = this.getFhirDataProvider().fetchResourceFromUrl(url);
     List<Report> lst = bundle.getEntry().parallelStream().map(Report::new).collect(Collectors.toList());
+
+    // Remove items from lst if we are searching for submitted only but the date is null
+    // Only DocumentReferences that have been submitted will have a value for date.
+    if (Boolean.TRUE.equals(submittedBoolean)) {
+      lst.removeIf(report -> report.getSubmittedDate() == null);
+    }
+
+    // Remove items from lst if we are searching for non-submitted but the date
+    // has a value.  Only DocumentReference that have been submitted will have a value for
+    // date
+    if (Boolean.FALSE.equals(submittedBoolean)) {
+      lst.removeIf(report -> report.getSubmittedDate() != null);
+    }
+
+
     List<String> reportIds = lst.stream().map(report -> ReportIdHelper.getMasterMeasureReportId(report.getId(),report.getReportMeasure().getValue())).collect(Collectors.toList());
     Bundle response = this.getFhirDataProvider().getMeasureReportsByIds(reportIds);
 
