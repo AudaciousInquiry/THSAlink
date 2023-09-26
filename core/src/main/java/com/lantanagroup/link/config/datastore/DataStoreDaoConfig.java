@@ -32,4 +32,7 @@ public class DataStoreDaoConfig {
 
     @Getter
     private Boolean deleteExpungeEnabled;
+
+    @Getter
+    private Boolean filterParameterEnabled;
 }

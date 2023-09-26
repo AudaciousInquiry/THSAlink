@@ -20,6 +20,7 @@ public class Report {
   Date creationDate;
   String submittedDate;
   String note;
+  String documentReferenceId;
   ReportMeasure reportMeasure;
 
   public Report (Bundle.BundleEntryComponent entry) {
@@ -46,6 +47,8 @@ public class Report {
     if (docReference.getDate() != null) {
       this.setSubmittedDate(Helper.getFhirDate(docReference.getDate()));
     }
+
+    this.setDocumentReferenceId(docReference.getIdElement().getIdPart());
 
     if (!docReference.getIdentifier().isEmpty()) {
       ReportMeasure rm = new ReportMeasure();
