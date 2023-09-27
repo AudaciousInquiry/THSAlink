@@ -471,6 +471,99 @@ public class ReportController extends BaseController {
     return documentReference;
   }
 
+  private void sendReport(LinkCredentials user,
+                          @PathVariable String reportId,
+                          HttpServletRequest request,
+                          String taskId) {
+
+    // Get the task so that it can be updated later
+    FhirDataProvider dataProvider = getFhirDataProvider();
+    Task task = dataProvider.getTaskById(taskId);
+
+    try {
+
+      logger.info("Sending Report with ID {}", reportId);
+
+      Annotation note = new Annotation();
+      String noteMessage = "";
+
+      String submitterName = FhirHelper.getName(user.getPractitioner().getName());
+
+      DocumentReference documentReference = this.getFhirDataProvider().findDocRefForReport(reportId);
+      noteMessage = String.format("DocumentReference '%s' associated with report retrieved.", documentReference.getIdElement().getIdPart());
+      logger.info(noteMessage);
+      note = new Annotation();
+      note.setTime(new Date());
+      note.setText(noteMessage);
+      task.addNote(note);
+
+      List<MeasureReport> reports = documentReference.getIdentifier().stream()
+              .map(identifier -> ReportIdHelper.getMasterMeasureReportId(reportId, identifier.getValue()))
+              .map(id -> this.getFhirDataProvider().getMeasureReportById(id))
+              .collect(Collectors.toList());
+
+      Class<?> senderClazz = Class.forName(this.config.getSender());
+      IReportSender sender = (IReportSender) this.context.getBean(senderClazz);
+      logger.info("Report '{}' being sent using class '{}'", reportId, config.getSender());
+
+      String sentLocation = sender.send(reports, documentReference, request, this.getFhirDataProvider(), bundlerConfig);
+      noteMessage = String.format("Report with ID '%s' sent to %s", reportId, sentLocation);
+      logger.info(noteMessage);
+      note = new Annotation();
+      note.setTime(new Date());
+      note.setText(noteMessage);
+      task.addNote(note);
+
+      // Log / Add Task Note
+      noteMessage = String.format("Report with ID %s submitted by %s on %s",
+              documentReference.getMasterIdentifier().getValue(),
+              (Helper.validateLoggerValue(submitterName) ? submitterName : ""),
+              new Date());
+      logger.info(noteMessage);
+      note = new Annotation();
+      note.setTime(new Date());
+      note.setText(noteMessage);
+      task.addNote(note);
+
+      // Now that we've submitted (successfully), update the doc ref with the status and date
+      documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
+      documentReference.setDate(new Date());
+      documentReference = FhirHelper.incrementMajorVersion(documentReference);
+      this.getFhirDataProvider().updateResource(documentReference);
+      noteMessage = String.format("DocumentReference '%s' updated with Status '%s', Date '%s', and Version '%s'",
+              documentReference.getIdElement().getIdPart(),
+              documentReference.getStatus(),
+              documentReference.getDate(),
+              documentReference.getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL).getValue().toString());
+      logger.info(noteMessage);
+      note = new Annotation();
+      note.setTime(new Date());
+      note.setText(noteMessage);
+      task.addNote(note);
+
+      this.getFhirDataProvider().audit(request, user.getJwt(), FhirHelper.AuditEventTypes.Send, "Successfully Sent Report");
+
+      //reportContext.getPatientCensusLists().get(0).getIdElement().getIdPart()
+      task.setStatus(Task.TaskStatus.COMPLETED);
+      note = new Annotation();
+      note.setTime(new Date());
+      note.setText(String.format("Done sending report '%s'", reportId));
+      task.addNote(note);
+    } catch (Exception ex) {
+      String errorMessage = String.format("Issue with sending report '%s' - %s", reportId, ex.getMessage());
+      logger.error(errorMessage);
+      Annotation note = new Annotation();
+      note.setText(errorMessage);
+      note.setTime(new Date());
+      task.addNote(note);
+      task.setStatus(Task.TaskStatus.FAILED);
+    } finally {
+      task.setLastModified(new Date());
+      dataProvider.updateResource(task);
+    }
+
+  }
+
   /**
    * Sends the specified report to the recipients configured in <strong>api.send-urls</strong>
    *
@@ -479,38 +572,22 @@ public class ReportController extends BaseController {
    * @throws Exception Thrown when the configured sender class is not found or fails to initialize or the reportId it not found
    */
   @PostMapping("/{reportId}/$send")
-  public void send(
-          Authentication authentication,
+  public ResponseEntity<?> send(
+          @AuthenticationPrincipal LinkCredentials user,
           @PathVariable String reportId,
-          HttpServletRequest request) throws Exception {
+          HttpServletRequest request){
 
-    if (StringUtils.isEmpty(this.config.getSender()))
-      throw new IllegalStateException("Not configured for sending");
+    if (StringUtils.isEmpty(this.config.getSender())) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Not configured for sending");
+    }
 
-    DocumentReference documentReference = this.getFhirDataProvider().findDocRefForReport(reportId);
-    List<MeasureReport> reports = documentReference.getIdentifier().stream()
-            .map(identifier -> ReportIdHelper.getMasterMeasureReportId(reportId, identifier.getValue()))
-            .map(id -> this.getFhirDataProvider().getMeasureReportById(id))
-            .collect(Collectors.toList());
+    Task response = TaskHelper.getNewTask(user, Constants.SEND_REPORT);
+    FhirDataProvider fhirDataProvider = getFhirDataProvider();
+    fhirDataProvider.updateResource(response);
 
-    Class<?> senderClazz = Class.forName(this.config.getSender());
-    IReportSender sender = (IReportSender) this.context.getBean(senderClazz);
+    executor.submit(() -> sendReport(user, reportId, request, response.getId()));
 
-    // update the DocumentReference's status and date
-    documentReference.setDocStatus(DocumentReference.ReferredDocumentStatus.FINAL);
-    documentReference.setDate(new Date());
-    documentReference = FhirHelper.incrementMajorVersion(documentReference);
-
-    sender.send(reports, documentReference, request, authentication, this.getFhirDataProvider(), bundlerConfig);
-
-    // Now that we've submitted (successfully), update the doc ref with the status and date
-    this.getFhirDataProvider().updateResource(documentReference);
-
-    String submitterName = FhirHelper.getName(((LinkCredentials) authentication.getPrincipal()).getPractitioner().getName());
-
-    logger.info("MeasureReport with ID " + documentReference.getMasterIdentifier().getValue() + " submitted by " + (Helper.validateLoggerValue(submitterName) ? submitterName : "") + " on " + new Date());
-
-    this.getFhirDataProvider().audit(request, ((LinkCredentials) authentication.getPrincipal()).getJwt(), FhirHelper.AuditEventTypes.Send, "Successfully Sent Report");
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{reportId}/$download/{type}")
@@ -760,7 +837,8 @@ public class ReportController extends BaseController {
           @RequestParam(required = false) String periodStartDate,
           @RequestParam(required = false) String periodEndDate,
           @RequestParam(required = false) String docStatus,
-          @RequestParam(required = false) String submittedDate)
+          @RequestParam(required = false) String submittedDate,
+          @RequestParam(required = false) String submitted)
           throws Exception {
 
     Bundle bundle;
@@ -800,7 +878,35 @@ public class ReportController extends BaseController {
         url += "&";
       }
       url += "docStatus=" + docStatus.toLowerCase();
+      andCond = true;
     }
+
+    Boolean submittedBoolean = null;
+    if (submitted != null) {
+      submittedBoolean = Boolean.parseBoolean(submitted);
+    }
+
+    if (Boolean.TRUE.equals(submittedBoolean)) {
+      // We want to find documents that have been submitted.  Which
+      // should mean that docStatus = final and the date isn't null.
+      // All we can do here is search for docStatus = final then later
+      // also verify that the date has a value.
+      if (andCond) {
+        url += "&";
+      }
+      url += "docStatus=final";
+      andCond = true;
+    } else if (Boolean.FALSE.equals(submittedBoolean)) {
+      // We want to fnd documents that HAVE NOT been submitted.  Which
+      // should mean that docStatus <> final and that the date field is
+      // either missing or set to null.  Which we have to check later.
+      if (andCond) {
+        url += "&";
+      }
+      url += "_filter=docStatus+ne+final";
+      andCond = true;
+    }
+
     if (submittedDate != null) {
       if (andCond) {
         url += "&";
@@ -811,9 +917,23 @@ public class ReportController extends BaseController {
       url += "date=ge" + submittedDate + "&date=le" + theDayAfterSubmittedDateEndAsString;
     }
 
-
     bundle = this.getFhirDataProvider().fetchResourceFromUrl(url);
     List<Report> lst = bundle.getEntry().parallelStream().map(Report::new).collect(Collectors.toList());
+
+    // Remove items from lst if we are searching for submitted only but the date is null
+    // Only DocumentReferences that have been submitted will have a value for date.
+    if (Boolean.TRUE.equals(submittedBoolean)) {
+      lst.removeIf(report -> report.getSubmittedDate() == null);
+    }
+
+    // Remove items from lst if we are searching for non-submitted but the date
+    // has a value.  Only DocumentReference that have been submitted will have a value for
+    // date
+    if (Boolean.FALSE.equals(submittedBoolean)) {
+      lst.removeIf(report -> report.getSubmittedDate() != null);
+    }
+
+
     List<String> reportIds = lst.stream().map(report -> ReportIdHelper.getMasterMeasureReportId(report.getId(),report.getReportMeasure().getValue())).collect(Collectors.toList());
     Bundle response = this.getFhirDataProvider().getMeasureReportsByIds(reportIds);
 
@@ -1153,5 +1273,4 @@ public class ReportController extends BaseController {
     }
     return patientBundle;
   }
-
 }

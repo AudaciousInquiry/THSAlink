@@ -2,9 +2,8 @@ package com.lantanagroup.link.nhsn;
 
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.*;
-import com.lantanagroup.link.*;
 import com.azure.storage.blob.models.ParallelTransferOptions;
-import com.lantanagroup.link.auth.LinkCredentials;
+import com.lantanagroup.link.*;
 import com.lantanagroup.link.config.api.ApiConfig;
 import com.lantanagroup.link.config.bundler.BundlerConfig;
 import com.lantanagroup.link.config.sender.AzureBlobStorageConfig;
@@ -17,7 +16,6 @@ import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -207,10 +205,13 @@ public class AzureBlobStorageSender extends GenericSender implements IReportSend
   }
 
   @Override
-  public void send(List<MeasureReport> masterMeasureReports, DocumentReference documentReference, HttpServletRequest request, Authentication auth, FhirDataProvider fhirDataProvider, BundlerConfig bundlerConfig) throws Exception {
+  public String send(List<MeasureReport> masterMeasureReports, DocumentReference documentReference, HttpServletRequest request, FhirDataProvider fhirDataProvider, BundlerConfig bundlerConfig) throws Exception {
     Bundle bundle = this.generateBundle(documentReference, masterMeasureReports, fhirDataProvider, bundlerConfig);
 
     this.sendContent(bundle, documentReference, fhirDataProvider);
+
+    // TODO - return a location where document was sent.
+    return "";
   }
 
   /**
