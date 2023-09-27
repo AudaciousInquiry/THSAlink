@@ -30,7 +30,7 @@ public class FhirHelper {
   private static final Logger logger = LoggerFactory.getLogger(FhirHelper.class);
   private static final String NAME = "name";
   private static final String SUBJECT = "sub";
-  private static final String DOCUMENT_REFERENCE_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/nhsnlink-report-version";
+  //private static final String DOCUMENT_REFERENCE_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/nhsnlink-report-version";
 
   public static void recordAuditEvent(HttpServletRequest request, FhirDataProvider fhirDataProvider, DecodedJWT jwt, AuditEventTypes type, String outcomeDescription) {
     AuditEvent auditEvent = createAuditEvent(request, jwt, type, outcomeDescription);
@@ -171,7 +171,7 @@ public class FhirHelper {
   }
 
   public static Extension createVersionExtension(String value) {
-    return new Extension(DOCUMENT_REFERENCE_VERSION_URL, new StringType(value));
+    return new Extension(Constants.DOCUMENT_REFERENCE_VERSION_URL, new StringType(value));
   }
 
   /**
@@ -182,14 +182,14 @@ public class FhirHelper {
    */
   public static DocumentReference incrementMinorVersion(DocumentReference documentReference) {
 
-    if (documentReference.getExtensionByUrl(DOCUMENT_REFERENCE_VERSION_URL) == null) {
+    if (documentReference.getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL) == null) {
       documentReference.addExtension(createVersionExtension("0.1"));
     } else {
       String version = documentReference
-              .getExtensionByUrl(DOCUMENT_REFERENCE_VERSION_URL)
+              .getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL)
               .getValue().toString();
 
-      documentReference.getExtensionByUrl(DOCUMENT_REFERENCE_VERSION_URL)
+      documentReference.getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL)
               .setValue(new StringType(version.substring(0, version.indexOf(".") + 1) + (Integer.parseInt(version.substring(version.indexOf(".") + 1)) + 1)));
     }
 
@@ -201,15 +201,15 @@ public class FhirHelper {
    * @return - the DocumentReference with the major version incremented by 1
    */
   public static DocumentReference incrementMajorVersion(DocumentReference documentReference) {
-    if (documentReference.getExtensionByUrl(DOCUMENT_REFERENCE_VERSION_URL) == null) {
+    if (documentReference.getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL) == null) {
       documentReference.addExtension(createVersionExtension("1.0"));
     } else {
       String version = documentReference
-              .getExtensionByUrl(DOCUMENT_REFERENCE_VERSION_URL)
+              .getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL)
               .getValue().toString();
 
       version = version.substring(0, version.indexOf("."));
-      documentReference.getExtensionByUrl(DOCUMENT_REFERENCE_VERSION_URL)
+      documentReference.getExtensionByUrl(Constants.DOCUMENT_REFERENCE_VERSION_URL)
               .setValue(new StringType((Integer.parseInt(version) + 1) + ".0"));
     }
     return documentReference;
@@ -501,7 +501,7 @@ public class FhirHelper {
   public static void setSubmissionLocation(DocumentReference documentReference, String location) {
     documentReference.getContent().removeIf(c -> c.hasAttachment() && c.getAttachment().hasUrl());
     DocumentReference.DocumentReferenceContentComponent newContent = new DocumentReference.DocumentReferenceContentComponent();
-    newContent.getAttachment().setUrl(location);
+    newContent.getAttachment().setUrl(location).setCreation(new Date()).setTitle("SubmissionLocation");
     documentReference.getContent().add(newContent);
   }
 
