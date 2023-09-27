@@ -23,6 +23,9 @@ public class Report {
   String documentReferenceId;
   ReportMeasure reportMeasure;
 
+  public Report() {
+  }
+
   public Report (Bundle.BundleEntryComponent entry) {
     DocumentReference docReference = (DocumentReference) entry.getResource();
     if (!docReference.getAuthor().isEmpty()) {
