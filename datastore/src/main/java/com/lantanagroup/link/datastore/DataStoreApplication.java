@@ -76,6 +76,7 @@ public class DataStoreApplication extends SpringBootServletInitializer {
       if (dao.getAllowMultipleDelete() != null) { theDaoConfig.setDeleteExpungeEnabled(dao.getAllowMultipleDelete()); }
       if (dao.getFetchSizeDefaultMaximum() != null) { theDaoConfig.setFetchSizeDefaultMaximum(dao.getFetchSizeDefaultMaximum()); }
       if (dao.getExpireSearchResultsAfterMillis() != null) { theDaoConfig.setExpireSearchResultsAfterMillis(dao.getExpireSearchResultsAfterMillis()); }
+      if (dao.getFilterParameterEnabled() != null) { theDaoConfig.setFilterParameterEnabled(dao.getFilterParameterEnabled()); }
     }
 
     return theDaoConfig;

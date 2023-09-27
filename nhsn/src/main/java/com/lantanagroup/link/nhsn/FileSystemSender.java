@@ -14,7 +14,6 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +74,7 @@ public class FileSystemSender extends GenericSender implements IReportSender {
     }
 
     @Override
-    public void send(List<MeasureReport> masterMeasureReports, DocumentReference documentReference, HttpServletRequest request, Authentication auth, FhirDataProvider fhirDataProvider, BundlerConfig bundlerConfig) throws Exception {
+    public String send(List<MeasureReport> masterMeasureReports, DocumentReference documentReference, HttpServletRequest request, FhirDataProvider fhirDataProvider, BundlerConfig bundlerConfig) throws Exception {
         Bundle bundle = this.generateBundle(documentReference, masterMeasureReports, fhirDataProvider, bundlerConfig);
 
         FileSystemSenderConfig.Formats format = this.getFormat();
@@ -105,6 +104,8 @@ public class FileSystemSender extends GenericSender implements IReportSender {
         Files.write(filePath, content.getBytes(StandardCharsets.UTF_8));
 
         logger.info(String.format("Done saving submission bundle/report to %s", filePath.toString()));
+
+        return filePath.toString();
     }
 
     @Override

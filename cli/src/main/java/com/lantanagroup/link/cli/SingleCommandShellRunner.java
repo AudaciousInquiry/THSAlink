@@ -24,6 +24,7 @@ public class SingleCommandShellRunner implements ApplicationRunner {
           "expunge-data",
           "manual-expunge",
           "generate-report",
+          "send-reports",
           "austin-tester");
 
   public SingleCommandShellRunner(Shell shell, ConfigurableEnvironment environment) {

@@ -90,7 +90,7 @@ public abstract class GenericSender {
       return locations.get(0);
     }
 
-    return null;
+    return "";
   }
 
   private String locationCleaner(String location) {
