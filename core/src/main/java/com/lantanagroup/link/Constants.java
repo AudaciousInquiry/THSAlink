@@ -51,4 +51,6 @@ public class Constants {
   public static final Coding GENERATE_REPORT = new Coding().setCode("generate-report").setSystem("https://nhsnlink.org").setDisplay("Generate Report Task");
   public static final Coding FILE_UPLOAD = new Coding().setCode("file-upload").setSystem("https://nhsnlink.org").setDisplay("Upload Data File");
   public static final Coding EXTERNAL_FILE_DOWNLOAD = new Coding().setCode("external-file-download").setSystem("https://nhsnlink.org").setDisplay("File Downloaded From Source");
+  public static final Coding SEND_REPORT  = new Coding().setCode("send-report").setSystem("https://nhsnlink.org").setDisplay("Send Report Task");
+  public static final String DOCUMENT_REFERENCE_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/nhsnlink-report-version";
 }

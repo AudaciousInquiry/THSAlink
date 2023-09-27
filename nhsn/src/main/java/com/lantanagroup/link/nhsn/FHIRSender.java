@@ -4,7 +4,6 @@ import com.lantanagroup.link.FhirDataProvider;
 import com.lantanagroup.link.FhirHelper;
 import com.lantanagroup.link.GenericSender;
 import com.lantanagroup.link.IReportSender;
-import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.config.bundler.BundlerConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
@@ -13,7 +12,6 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,13 +24,15 @@ public class FHIRSender extends GenericSender implements IReportSender {
   protected static final Logger logger = LoggerFactory.getLogger(FHIRSender.class);
 
   @Override
-  public void send(List<MeasureReport> masterMeasureReports, DocumentReference documentReference, HttpServletRequest request, Authentication auth, FhirDataProvider fhirDataProvider, BundlerConfig bundlerConfig) throws Exception {
+  public String send(List<MeasureReport> masterMeasureReports, DocumentReference documentReference, HttpServletRequest request, FhirDataProvider fhirDataProvider, BundlerConfig bundlerConfig) throws Exception {
     Bundle bundle = this.generateBundle(documentReference, masterMeasureReports, fhirDataProvider, bundlerConfig);
     String location = this.sendContent(bundle, documentReference, fhirDataProvider);
 
     if (StringUtils.isNotEmpty(location)) {
       FhirHelper.setSubmissionLocation(documentReference, location);
     }
+
+    return location;
   }
 
   public String bundle(Bundle bundle, FhirDataProvider fhirDataProvider, String type) {
