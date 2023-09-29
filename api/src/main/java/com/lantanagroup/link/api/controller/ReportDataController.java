@@ -7,6 +7,7 @@ import com.lantanagroup.link.config.datagovernance.DataGovernanceConfig;
 import com.lantanagroup.link.config.query.USCoreConfig;
 import com.lantanagroup.link.config.query.USCoreOtherResourceTypeConfig;
 import com.lantanagroup.link.model.ExpungeResourcesToDelete;
+import com.lantanagroup.link.model.Job;
 import com.lantanagroup.link.model.UploadFile;
 import lombok.Getter;
 import lombok.Setter;
@@ -80,14 +81,15 @@ public class ReportDataController extends BaseController {
 
     logger.info("Received UploadFile of Type '{}' and Name '{}'", uploadFile.getType(), uploadFile.getName());
 
-    Task response = TaskHelper.getNewTask(user, Constants.FILE_UPLOAD);
+    Task task = TaskHelper.getNewTask(user, Constants.FILE_UPLOAD);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(response);
+    fhirDataProvider.updateResource(task);
+    Job job = new Job(task);
 
     // call processUploadFile
-    executor.submit(() -> processUploadFile(user, uploadFile, response.getId()));
+    executor.submit(() -> processUploadFile(user, uploadFile, task.getId()));
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(job);
   }
 
   private void processUploadFile(LinkCredentials user, UploadFile uploadFile, String taskId) {
@@ -231,13 +233,14 @@ public class ReportDataController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 
-    Task responseTask = TaskHelper.getNewTask(user, Constants.MANUAL_EXPUNGE);
+    Task task = TaskHelper.getNewTask(user, Constants.MANUAL_EXPUNGE);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(responseTask);
+    fhirDataProvider.updateResource(task);
+    Job job = new Job(task);
 
-    executor.submit(() -> manualExpungeTask(user, request, resourcesToDelete,responseTask.getId()));
+    executor.submit(() -> manualExpungeTask(user, request, resourcesToDelete,task.getId()));
 
-    return ResponseEntity.ok(responseTask);
+    return ResponseEntity.ok(job);
   }
 
   private void expungeData(LinkCredentials user, HttpServletRequest request, String taskId) {
@@ -331,13 +334,14 @@ public class ReportDataController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User does not have proper role to expunge data.");
     }
 
-    Task responseTask = TaskHelper.getNewTask(user, Constants.EXPUNGE_TASK);
+    Task task = TaskHelper.getNewTask(user, Constants.EXPUNGE_TASK);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(responseTask);
+    fhirDataProvider.updateResource(task);
+    Job job = new Job(task);
 
-    executor.submit(() -> expungeData(user, request, responseTask.getId()));
+    executor.submit(() -> expungeData(user, request, task.getId()));
 
-    return ResponseEntity.ok(responseTask);
+    return ResponseEntity.ok(job);
   }
 
   private Date SubtractDurationFromNow(String retentionPeriod) throws DatatypeConfigurationException {

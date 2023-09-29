@@ -1,6 +1,5 @@
 package com.lantanagroup.link.tasks;
 
-import ca.uhn.fhir.context.FhirContext;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.ChannelSftp;
@@ -9,13 +8,13 @@ import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
 import com.lantanagroup.link.helpers.SftpDownloader;
+import com.lantanagroup.link.model.Job;
 import com.lantanagroup.link.model.UploadFile;
 import com.lantanagroup.link.tasks.config.ParklandInventoryImportConfig;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ public class ParklandInventoryImportTask {
                 throw new Exception(errorMessage);
             }
 
-            // If specified file type is CSV, for parkland we need to know icu-identifers
+            // If specified file type is CSV, for parkland we need to know icu-identifiers
             if (fileType.equals("csv") &&
                     ((config.getSubmissionInfo().get(fileType).getIcuIdentifiers() == null) ||
                             (config.getSubmissionInfo().get(fileType).getIcuIdentifiers().length < 1))) {
@@ -121,10 +120,9 @@ public class ParklandInventoryImportTask {
                 // Didn't get success status from API
                 throw new Exception(String.format("Expecting HTTP Status Code 200 from API, received %s", response.getResponseCode()));
             }
-            FhirContext ctx = FhirContext.forR4();
-            Task task = ctx.newJsonParser().parseResource(Task.class, response.getResponseBody());
+            Job job = mapper.readValue(response.getResponseBody(), Job.class);
 
-            logger.info("API has started processing data upload Task with ID {}", task.getId());
+            logger.info("API has started processing data upload job with ID {}", job.getId());
 
         } catch (Exception ex) {
             logger.error("Issue with data submission to API: {}", ex.getMessage());
