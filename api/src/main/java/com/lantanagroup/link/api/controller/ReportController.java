@@ -146,14 +146,15 @@ public class ReportController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("At least one bundleId should be specified.");
     }
 
-    Task response = TaskHelper.getNewTask(user, Constants.GENERATE_REPORT);
+    Task task = TaskHelper.getNewTask(user, Constants.GENERATE_REPORT);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(response);
+    fhirDataProvider.updateResource(task);
+    Job job = new Job(task);
 
     // Update generateResponse to take Task id (or overload in some way)
-    executor.submit(() -> generateResponse(user, request, input.getBundleIds(), input.getPeriodStart(), input.getPeriodEnd(), input.isRegenerate(), response.getId()));
+    executor.submit(() -> generateResponse(user, request, input.getBundleIds(), input.getPeriodStart(), input.getPeriodEnd(), input.isRegenerate(), job.getId()));
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(job);
   }
 
   /**
@@ -581,13 +582,15 @@ public class ReportController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Not configured for sending");
     }
 
-    Task response = TaskHelper.getNewTask(user, Constants.SEND_REPORT);
+    Task task = TaskHelper.getNewTask(user, Constants.SEND_REPORT);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(response);
+    fhirDataProvider.updateResource(task);
 
-    executor.submit(() -> sendReport(user, reportId, request, response.getId()));
+    Job job = new Job(task);
 
-    return ResponseEntity.ok(response);
+    executor.submit(() -> sendReport(user, reportId, request, task.getId()));
+
+    return ResponseEntity.ok(job);
   }
 
   @GetMapping("/{reportId}/$download/{type}")

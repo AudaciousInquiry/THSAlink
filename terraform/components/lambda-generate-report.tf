@@ -119,6 +119,7 @@ resource "aws_lambda_function" "generate-report" {
   s3_bucket = data.terraform_remote_state.infra.outputs.lambda_deploy_bucket.bucket
   s3_key = module.lambda-jar.s3-file.key
   s3_object_version = module.lambda-jar.s3-file.version_id
+  source_code_hash = module.lambda-jar.s3-file.source_hash
 
   tags = {
     Environment = var.environment,

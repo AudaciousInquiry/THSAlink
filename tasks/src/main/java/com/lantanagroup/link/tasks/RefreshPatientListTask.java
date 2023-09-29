@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.impl.BaseClient;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lantanagroup.link.Constants;
 import com.lantanagroup.link.FhirContextProvider;
 import com.lantanagroup.link.Helper;
@@ -12,6 +13,7 @@ import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.config.query.QueryConfig;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.model.Job;
 import com.lantanagroup.link.query.auth.HapiFhirAuthenticationInterceptor;
 import com.lantanagroup.link.query.auth.ICustomAuthConfig;
 import com.lantanagroup.link.tasks.config.CensusReportingPeriods;
@@ -22,7 +24,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.hl7.fhir.r4.model.ListResource;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -172,9 +173,9 @@ public class RefreshPatientListTask {
             // Didn't get success status from API
             throw new Exception(String.format("Expecting HTTP Status Code 200 from API, received %s", response.getResponseCode()));
         }
+        ObjectMapper mapper = new ObjectMapper();
+        Job job = mapper.readValue(response.getResponseBody(), Job.class);
 
-        Task task = fhirContext.newJsonParser().parseResource(Task.class, response.getResponseBody());
-
-        logger.info("API has started Patient List Load Task with ID {}", task.getId());
+        logger.info("API has started Patient List Load job with ID {}", job.getId());
     }
 }
