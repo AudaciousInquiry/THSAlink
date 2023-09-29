@@ -22,7 +22,9 @@ public class Job {
 
     public Job(Task task) {
         id = task.getIdElement().getIdPart();
-        status = task.getStatus().toString();
+        // Getting the "code" of status element gives us completed, in-progress, etc...
+        // to make the return of this via API JSON look like a FHIR Task.
+        status = task.getStatusElement().getCode();
         created = task.getAuthoredOn();
         lastUpdated = task.getLastModified();
 
