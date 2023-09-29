@@ -1,11 +1,11 @@
 package com.lantanagroup.link.tasks;
 
-import ca.uhn.fhir.context.FhirContext;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.model.Job;
 import com.lantanagroup.link.model.Report;
 import com.lantanagroup.link.model.ReportBundle;
 import com.lantanagroup.link.tasks.config.SendReportsConfig;
@@ -15,7 +15,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
-import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +79,9 @@ public class SendReportsTask {
                     // Didn't get success status from API
                     throw new Exception(String.format("Expecting HTTP Status Code 200 from API, received %s", sendResponse.getResponseCode()));
                 }
-                FhirContext ctx = FhirContext.forR4();
-                Task task = ctx.newJsonParser().parseResource(Task.class, sendResponse.getResponseBody());
+                Job job = mapper.readValue(sendResponse.getResponseBody(), Job.class);
 
-                logger.info("Report '{}' has been sent.  Send Report Task started with id '{}'", report.getId(), task.getId());
+                logger.info("Report '{}' has been sent.  Send Report job started with id '{}'", report.getId(), job.getId());
             }
 
 
