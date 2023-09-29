@@ -2,10 +2,11 @@ package com.lantanagroup.link.api.controller;
 
 import ca.uhn.fhir.parser.IParser;
 import com.google.common.annotations.VisibleForTesting;
-import com.lantanagroup.link.*;
 import com.lantanagroup.link.Constants;
+import com.lantanagroup.link.*;
 import com.lantanagroup.link.auth.LinkCredentials;
 import com.lantanagroup.link.model.CsvEntry;
+import com.lantanagroup.link.model.Job;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
@@ -25,7 +26,10 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -101,13 +105,14 @@ public class PatientIdentifierController extends BaseController {
           @RequestHeader("Content-Type") String contentType
   ) {
 
-    Task response = TaskHelper.getNewTask(user, Constants.REFRESH_PATIENT_LIST);
+    Task task = TaskHelper.getNewTask(user, Constants.REFRESH_PATIENT_LIST);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
-    fhirDataProvider.updateResource(response);
+    fhirDataProvider.updateResource(task);
+    Job job = new Job(task);
 
-    executor.submit(() -> processPatientIdentifierListTask(body, contentType, response.getId()));
+    executor.submit(() -> processPatientIdentifierListTask(body, contentType, task.getId()));
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(job);
   }
 
   private void processPatientIdentifierListTask(String receivedBody, String receivedType, String taskId) {

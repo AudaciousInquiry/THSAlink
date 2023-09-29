@@ -1,14 +1,14 @@
 package com.lantanagroup.link.tasks;
 
-import ca.uhn.fhir.context.FhirContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lantanagroup.link.auth.OAuth2Helper;
-import com.lantanagroup.link.tasks.config.ExpungeDataConfig;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
+import com.lantanagroup.link.model.Job;
+import com.lantanagroup.link.tasks.config.ExpungeDataConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpDelete;
-import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +40,11 @@ public class ExpungeDataTask {
                 // Didn't get success status from API
                 throw new Exception(String.format("Expecting HTTP Status Code 200 from API, received %s", response.getResponseCode()));
             }
-            FhirContext ctx = FhirContext.forR4();
-            Task task = ctx.newJsonParser().parseResource(Task.class, response.getResponseBody());
 
-            logger.info("API has started Expunge Data Task with ID {}", task.getId());
+            ObjectMapper mapper = new ObjectMapper();
+            Job job = mapper.readValue(response.getResponseBody(), Job.class);
+
+            logger.info("API has started Expunge Data Job with ID {}", job.getId());
 
         } catch (Exception ex) {
             logger.error("Error calling API Expunge Data - {}", ex.getMessage());
