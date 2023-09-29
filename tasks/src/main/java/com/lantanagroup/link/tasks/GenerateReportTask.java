@@ -1,21 +1,19 @@
 package com.lantanagroup.link.tasks;
 
 import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lantanagroup.link.FhirContextProvider;
 import com.lantanagroup.link.Helper;
 import com.lantanagroup.link.auth.OAuth2Helper;
 import com.lantanagroup.link.helpers.HttpExecutor;
 import com.lantanagroup.link.helpers.HttpExecutorResponse;
 import com.lantanagroup.link.model.GenerateRequest;
+import com.lantanagroup.link.model.Job;
 import com.lantanagroup.link.tasks.config.GenerateReportConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.hl7.fhir.r4.model.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,9 +64,9 @@ public class GenerateReportTask {
                 // Didn't get success status from API
                 throw new Exception(String.format("Expecting HTTP Status Code 200 from API, received %s", response.getResponseCode()));
             }
-            FhirContext fhirContext = FhirContextProvider.getFhirContext();
-            Task task = fhirContext.newJsonParser().parseResource(Task.class, response.getResponseBody());
-            logger.info("API has started Generate Report Task with ID {}", task.getId());
+            ObjectMapper mapper = new ObjectMapper();
+            Job job = mapper.readValue(response.getResponseBody(), Job.class);
+            logger.info("API has started Generate Report Job with ID {}", job.getId());
 
             logger.info("GenerateReportTask executeTask - Completed");
 
