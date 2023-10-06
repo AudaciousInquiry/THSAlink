@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.impl.BaseClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lantanagroup.link.Constants;
@@ -78,14 +79,22 @@ public class RefreshPatientListTask {
 
     private static ListResource readList(RefreshPatientListConfig config, String patientListId, HapiFhirAuthenticationInterceptor interceptor) throws ClassNotFoundException {
 
-        FhirContext fhirContext = FhirContextProvider.getFhirContext();
+        System.setProperty("ca.uhn.fhir.parser.stax", "com.ctc.wstx.stax.WstxInputFactory");
+        FhirContext fhirContext = FhirContext.forR4();
+
+        //FhirContext fhirContext = FhirContextProvider.getFhirContext();
         fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+
+        AdditionalRequestHeadersInterceptor headersInterceptor = new AdditionalRequestHeadersInterceptor();
+        headersInterceptor.addHeaderValue("Accept","application/json");
 
         IGenericClient client = fhirContext.newRestfulGenericClient(config.getFhirServerBase());
         if (client instanceof BaseClient) {
             ((BaseClient) client).setKeepResponses(true);
         }
         client.registerInterceptor(interceptor);
+        client.registerInterceptor(headersInterceptor);
+
         ListResource r = client.fetchResourceFromUrl(ListResource.class, patientListId);
         if (r != null) {
             return r;
