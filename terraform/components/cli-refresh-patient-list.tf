@@ -40,7 +40,7 @@ resource "aws_scheduler_schedule" "refresh-patient-list-schedule" {
     mode = "OFF"
   }
 
-  schedule_expression = "rate(1 days)"
+  schedule_expression = "cron(0 13,1 ? * * *)"
 
   target {
     arn      = data.terraform_remote_state.infra.outputs.ecs_cluster_arn
@@ -50,7 +50,7 @@ resource "aws_scheduler_schedule" "refresh-patient-list-schedule" {
       task_count = "1"
       launch_type = "FARGATE"
       network_configuration {
-        subnets = var.subnets
+        subnets = ["subnet-0bbbe165bb6013ed4"]
         security_groups = var.security_groups
         assign_public_ip = false
       }
