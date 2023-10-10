@@ -50,7 +50,7 @@ resource "aws_scheduler_schedule" "refresh-patient-list-schedule" {
       task_count = "1"
       launch_type = "FARGATE"
       network_configuration {
-        subnets = ["subnet-0bbbe165bb6013ed4"]
+        subnets = var.subnets_b
         security_groups = var.security_groups
         assign_public_ip = false
       }
