@@ -45,12 +45,13 @@ public class Constants {
   public static final String LINK_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/link-version";
   public static final String MEASURE_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/measure-version";
   public static final String LinkUser = "link-user";
-  public static final Coding EXPUNGE_TASK = new Coding().setCode("expunge-data").setSystem("https://nhsnlink.org").setDisplay("Expunge Data Task");
-  public static final Coding MANUAL_EXPUNGE = new Coding().setCode("manual-expunge").setSystem("https://nhsnlink.org").setDisplay("Manual Expunge Task");
-  public static final Coding REFRESH_PATIENT_LIST = new Coding().setCode("refresh-patient-list").setSystem("https://nhsnlink.org").setDisplay("Refresh Patient List Task");
-  public static final Coding GENERATE_REPORT = new Coding().setCode("generate-report").setSystem("https://nhsnlink.org").setDisplay("Generate Report Task");
-  public static final Coding FILE_UPLOAD = new Coding().setCode("file-upload").setSystem("https://nhsnlink.org").setDisplay("Upload Data File");
-  public static final Coding EXTERNAL_FILE_DOWNLOAD = new Coding().setCode("external-file-download").setSystem("https://nhsnlink.org").setDisplay("File Downloaded From Source");
-  public static final Coding SEND_REPORT  = new Coding().setCode("send-report").setSystem("https://nhsnlink.org").setDisplay("Send Report Task");
+  public static final String SANER_JOB_TYPE_SYSTEM = "https://thsa1.sanerproject.org:10443/fhir/ValueSet/saner-job-types";
+  public static final Coding EXPUNGE_TASK = new Coding().setCode("expunge-data").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("Expunge Data");
+  public static final Coding MANUAL_EXPUNGE = new Coding().setCode("manual-expunge").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("Manual Expunge");
+  public static final Coding REFRESH_PATIENT_LIST = new Coding().setCode("refresh-patient-list").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("Refresh Patient List");
+  public static final Coding GENERATE_REPORT = new Coding().setCode("generate-report").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("Generate Report");
+  public static final Coding FILE_UPLOAD = new Coding().setCode("file-upload").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("Upload Data File");
+  public static final Coding EXTERNAL_FILE_DOWNLOAD = new Coding().setCode("external-file-download").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("File Downloaded From Source");
+  public static final Coding SEND_REPORT  = new Coding().setCode("send-report").setSystem(SANER_JOB_TYPE_SYSTEM).setDisplay("Send Report");
   public static final String DOCUMENT_REFERENCE_VERSION_URL = "https://www.cdc.gov/nhsn/fhir/nhsnlink/StructureDefinition/nhsnlink-report-version";
 }
