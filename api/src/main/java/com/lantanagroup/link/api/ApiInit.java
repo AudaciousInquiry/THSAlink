@@ -44,6 +44,9 @@ public class ApiInit {
   @Value("classpath:fhir/*")
   private Resource[] resources;
 
+  @Value("classpath:fhir/cqf/*.json")
+  private Resource[] cqfResources;
+
 
   private boolean checkPrerequisites() {
 
@@ -113,6 +116,28 @@ public class ApiInit {
     }
 
     return true;
+  }
+
+  private void loadCqfFhirResources() {
+
+    try {
+      FhirDataProvider evaluationService = new FhirDataProvider(config.getEvaluationService());
+      FhirContext ctx = FhirContextProvider.getFhirContext();
+      IParser jsonParser = ctx.newJsonParser();
+
+      logger.info("Adding any stored Resources to CQF server located at: {}", config.getEvaluationService());
+      logger.info(String.format("CQF Resources count: %d", cqfResources.length));
+
+      for (final Resource res : cqfResources) {
+        try (InputStream inputStream = res.getInputStream()) {
+          IBaseResource resource = readFileAsFhirResource(jsonParser, inputStream);
+          evaluationService.updateResource(resource);
+        }
+      }
+    } catch (Exception ex) {
+      logger.error(String.format("Error in loadCqfFhirResources due to %s", ex.getMessage()));
+    }
+
   }
 
   /**
@@ -229,6 +254,7 @@ public class ApiInit {
     //this.loadMeasureDefinitions();
     //this.loadSearchParameters();
     this.tagReportDefinitions();
+    this.loadCqfFhirResources();
   }
 
 }
