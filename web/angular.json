@@ -115,5 +115,8 @@
         }
       }
     }},
-  "defaultProject": "link-ui"
+  "defaultProject": "link-ui",
+  "cli": {
+    "analytics": "74408362-10e4-4112-91cc-643b8fd10774"
+  }
 }
