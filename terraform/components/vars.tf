@@ -30,6 +30,10 @@ variable "subnets" {
   type = list(string)
 }
 
+variable "subnets_b" {
+  type = list(string)
+}
+
 variable "security_groups" {
   type = list(string)
 }
