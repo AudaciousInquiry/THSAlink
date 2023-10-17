@@ -1,6 +1,7 @@
 package com.lantanagroup.link.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import com.lantanagroup.link.Constants;
 import com.lantanagroup.link.Helper;
 import com.lantanagroup.link.model.Job;
 import org.hl7.fhir.r4.model.Bundle;
@@ -25,6 +26,7 @@ public class JobController extends BaseController {
     public ResponseEntity<?> searchJobs(
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String type,
             @RequestParam(required = false) String createdDate,
             @RequestParam(required = false) String lastModifiedDate
 
@@ -43,6 +45,16 @@ public class JobController extends BaseController {
 
             if (status != null) {
                 url += String.format("%sstatus=%s",(andCond ? "&" : ""), Helper.encodeForUrl(status));
+                andCond = true;
+            }
+
+            if (type != null) {
+                String typeUrl = String.format("%s_tag=%s%s%s",
+                        (andCond ? "&" : ""),
+                        Helper.encodeForUrl(Constants.SANER_JOB_TYPE_SYSTEM),
+                        "%7C",
+                        Helper.encodeForUrl(type));
+                url += typeUrl;
                 andCond = true;
             }
 
