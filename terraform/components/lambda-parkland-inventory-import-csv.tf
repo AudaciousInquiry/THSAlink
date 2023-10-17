@@ -143,7 +143,10 @@ resource "aws_lambda_function" "parkland-inventory-import-csv" {
 
   vpc_config {
     security_group_ids = var.security_groups
-    subnet_ids         = var.subnets
+    //subnet_ids         = var.subnets
+    subnet_ids = var.subnets_b // thsa-saner-server-1b
+    // ECS run in thsa-saner-server-1a because they need to talk.  This is using thsa-saner-server-1b
+    // to get NAT gateway for agreed on external IP.
   }
 
   environment {
