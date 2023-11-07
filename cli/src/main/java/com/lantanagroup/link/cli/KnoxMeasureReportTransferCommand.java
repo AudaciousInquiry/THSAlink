@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import com.lantanagroup.link.helpers.SftpDownloader;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
