@@ -16,7 +16,6 @@ public class SingleCommandShellRunner implements ApplicationRunner {
   private final ConfigurableEnvironment environment;
   private final Shell shell;
   private final List<String> commands = List.of(
-          "query",
           "knox-measure-report-transfer",
           "refresh-patient-list",
           "parkland-inventory-import",
@@ -24,8 +23,7 @@ public class SingleCommandShellRunner implements ApplicationRunner {
           "expunge-data",
           "manual-expunge",
           "generate-report",
-          "send-reports",
-          "austin-tester");
+          "send-reports");
 
   public SingleCommandShellRunner(Shell shell, ConfigurableEnvironment environment) {
     this.shell = shell;
