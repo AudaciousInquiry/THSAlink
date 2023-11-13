@@ -146,6 +146,19 @@ public class ReportController extends BaseController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("At least one bundleId should be specified.");
     }
 
+    // We want to go ahead here and see if a report with the identifier this criteria would generate already
+    // exists.  If so but the regenerate flag isn't set then we want to fail with a 409, which is the legacy
+    // behavior expected by the Web component.
+    ReportCriteria criteria = new ReportCriteria(List.of(input.getBundleIds()), input.getPeriodStart(), input.getPeriodEnd());
+    String masterIdentifierValue = ReportIdHelper.getMasterIdentifierValue(criteria);
+    // search by masterIdentifierValue to uniquely identify the document - searching by combination of identifiers could return multiple documents
+    // like in the case one document contains the subset of identifiers of what other document contains
+    DocumentReference existingDocumentReference = this.getFhirDataProvider().findDocRefForReport(masterIdentifierValue);
+    // Search the reference document by measure criteria and reporting period
+    if (existingDocumentReference != null && !input.isRegenerate()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "A report has already been generated for the specified measure and reporting period. To regenerate the report, submit your request with regenerate=true.");
+    }
+
     Task task = TaskHelper.getNewTask(user, Constants.GENERATE_REPORT);
     FhirDataProvider fhirDataProvider = getFhirDataProvider();
     fhirDataProvider.updateResource(task);
@@ -257,6 +270,8 @@ public class ReportController extends BaseController {
       DocumentReference existingDocumentReference = this.getFhirDataProvider().findDocRefForReport(masterIdentifierValue);
       // Search the reference document by measure criteria and reporting period
       if (existingDocumentReference != null && !regenerate) {
+        // A check for this exists in generateReport() now, which means we 'should not' be getting here in this
+        // function.  Leaving here just in case... will result in a failed Job for this generate-report run.
         throw new ResponseStatusException(HttpStatus.CONFLICT, "A report has already been generated for the specified measure and reporting period. To regenerate the report, submit your request with regenerate=true.");
       }
 
