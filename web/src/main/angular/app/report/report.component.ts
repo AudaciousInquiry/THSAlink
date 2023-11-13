@@ -9,6 +9,7 @@ import {ReportModel} from "../model/ReportModel";
 import {ReportSaveModel} from "../model/ReportSaveModel"
 import {CodeableConcept} from "../model/fhir";
 import {formatDateToISO} from "../helper";
+import {Job} from '../model/job';
 
 @Component({
   selector: 'report',
@@ -117,8 +118,8 @@ export class ReportComponent implements OnInit, OnDestroy {
       }
       if (confirm('Are you sure you want to submit this report?')) {
         this.submitInProgress = true;
-        await this.reportService.send(this.masterId.split('-')[0]);
-        this.toastService.showInfo('Report sent!');
+        const sendJob: Job = await this.reportService.send(this.masterId.split('-')[0]);
+        this.toastService.showInfo('Report send started - Job id ' + sendJob.id);
         await this.router.navigate(['/review']);
       }
     } catch (ex) {
