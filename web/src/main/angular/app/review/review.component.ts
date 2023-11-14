@@ -99,37 +99,44 @@ export class ReviewComponent implements OnInit {
 
   getFilterCriteria() {
     let filterCriteria = '';
-    if (this.filter.reportTypeId == "") {
-      if (this.filter.measure !== "Select measure") {
-        // find the measure
-        const measure = this.measures.find(p => p.name === this.filter.measure);
-        filterCriteria += `identifier=${encodeURIComponent(measure.system + "|" + measure.id)}&`
-      }
-      if (this.filter.status !== 'Select status') {
-        const status = this.statuses.find(p => p.name === this.filter.status);
-        filterCriteria += `docStatus=${encodeURIComponent(status.value)}&`
-      }
-      if (this.filter.period.startDate !== null) {
-        let startDate = formatDateToISO(getFhirDate(this.filter.period.startDate));
-        filterCriteria += `periodStartDate=${startDate}&`
-      }
-      if (this.filter.period.endDate !== null) {
-        let endDate = formatDateToISO(getFhirDate(this.filter.period.endDate));
-        filterCriteria += `periodEndDate=${getEndOfDayDate(endDate)}&`
-      }
-      if (this.filter.submittedDate !== null) {
-        let submittedDate = formatDateToISO(getFhirDate(this.filter.submittedDate));
-        filterCriteria += `submittedDate=${submittedDate}&`
-      }
-      if (this.filter.submitter !== "Select submitter") {
-        // find the submitter
-        const submitter = this.submitters.find(p => p.name === this.filter.submitter);
-        filterCriteria += `author=${submitter.id}`
-      }
-    } else {
-      filterCriteria += `bundleId=${this.filter.reportTypeId}&`
-      filterCriteria += `page=${this.page}`
+
+    if (this.filter.measure !== 'Select measure') {
+      // find the measure
+      const measure = this.measures.find(p => p.name === this.filter.measure);
+      filterCriteria += `identifier=${encodeURIComponent(measure.system + '|' + measure.id)}&`;
     }
+
+    if (this.filter.status !== 'Select status') {
+      const status = this.statuses.find(p => p.name === this.filter.status);
+      filterCriteria += `docStatus=${encodeURIComponent(status.value)}&`;
+    }
+
+    if (this.filter.period.startDate !== null) {
+      const startDate = formatDateToISO(getFhirDate(this.filter.period.startDate));
+      filterCriteria += `periodStartDate=${startDate}&`;
+    }
+
+    if (this.filter.period.endDate !== null) {
+      const endDate = formatDateToISO(getFhirDate(this.filter.period.endDate));
+      filterCriteria += `periodEndDate=${getEndOfDayDate(endDate)}&`;
+    }
+
+    if (this.filter.submittedDate !== null) {
+      const submittedDate = formatDateToISO(getFhirDate(this.filter.submittedDate));
+      filterCriteria += `submittedDate=${submittedDate}&`;
+    }
+
+    if (this.filter.submitter !== 'Select submitter') {
+      // find the submitter
+      const submitter = this.submitters.find(p => p.name === this.filter.submitter);
+      filterCriteria += `author=${submitter.id}`;
+    }
+
+    if (this.filter.reportTypeId !== '') {
+      filterCriteria += `bundleId=${this.filter.reportTypeId}&`;
+      filterCriteria += `page=${this.page}`;
+    }
+
     return filterCriteria;
   }
 

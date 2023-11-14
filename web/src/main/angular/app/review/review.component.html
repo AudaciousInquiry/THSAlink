@@ -80,7 +80,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let report of reports">
+    <tr *ngFor="let report of reports | slice: (page-1) * pageSize : page * pageSize">
         <td>
             {{getMeasureName(report.reportMeasure)}}
         </td>
