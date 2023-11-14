@@ -9,6 +9,7 @@ import {ReportModel} from "../model/ReportModel";
 import {ReportSaveModel} from "../model/ReportSaveModel"
 import {CodeableConcept} from "../model/fhir";
 import {formatDateToISO} from "../helper";
+import {Job} from '../model/job';
 
 @Component({
   selector: 'report',
@@ -117,8 +118,8 @@ export class ReportComponent implements OnInit, OnDestroy {
       }
       if (confirm('Are you sure you want to submit this report?')) {
         this.submitInProgress = true;
-        await this.reportService.send(this.masterId.split('-')[0]);
-        this.toastService.showInfo('Report sent!');
+        const sendJob: Job = await this.reportService.send(this.masterId.split('-')[0]);
+        this.toastService.showInfo('Report send started - Job id ' + sendJob.id);
         await this.router.navigate(['/review']);
       }
     } catch (ex) {
@@ -208,24 +209,12 @@ export class ReportComponent implements OnInit, OnDestroy {
           'Once re-evaluated, the newest calculated aggregate totals will be updated in this report. ' +
           'Fields not calculated as part of the measure will not be affected. Are you sure you want to continue?')) {
         try {
-          const generateResponse = await this.reportService.generate(bundleIds, formatDateToISO(this.reportModel.reportPeriodStart), formatDateToISO(this.reportModel.reportPeriodEnd), true);
-          await this.router.navigate(['review', generateResponse.masterId]);
-          this.toastService.showInfo('Report re-generated!');
+          const generateResponse: Job = await this.reportService.generateNew(bundleIds, formatDateToISO(this.reportModel.reportPeriodStart), formatDateToISO(this.reportModel.reportPeriodEnd), true);
+          await this.router.navigate(['review']);
+          this.toastService.showInfo('Report re-generation started - Job id: ' + generateResponse.id);
           await this.initReport();
         } catch (ex) {
-          if (ex.status === 409) {
-            if (confirm(ex.error.message)) {
-              try {
-                const generateResponse = await this.reportService.generate(bundleIds, formatDateToISO(this.reportModel.reportPeriodStart), formatDateToISO(this.reportModel.reportPeriodEnd), true);
-                await this.router.navigate(['review', generateResponse.masterId]);
-              } catch (ex) {
-                this.toastService.showException('Error re-generating report', ex);
-              }
-            }
-          } else {
-            this.toastService.showException('Error re-generating report', ex);
-          }
-          return;
+          this.toastService.showException('Error re-generating report: ' + this.masterId, ex);
         }
       }
     } catch (ex) {

@@ -10,6 +10,7 @@ import {map} from 'rxjs/operators';
 import {ReportModel} from "../model/ReportModel";
 import {ReportSaveModel} from "../model/ReportSaveModel";
 import {PatientDataModel} from "../model/PatientDataModel";
+import {Job} from "../model/job";
 
 @Injectable()
 export class ReportService {
@@ -29,6 +30,18 @@ export class ReportService {
     return await this.http.post<GenerateResponse>(url, generateRequest).toPromise();
   }
 
+  async generateNew(bundleIds: string[], periodStart: string, periodEnd: string, regenerate = false) {
+    let url = 'report/$generate?';
+    url = this.configService.getApiUrl(url);
+    const generateRequest = {
+      bundleIds,
+      periodStart,
+      periodEnd,
+      regenerate: (regenerate ? 'true' : 'false')
+    };
+    return await this.http.post<Job>(url, generateRequest).toPromise();
+  }
+
   getReports(queryParams) {
     let url = this.configService.getApiUrl('report?');
     if (queryParams !== undefined && queryParams !== '') {
@@ -44,7 +57,7 @@ export class ReportService {
 
   async send(reportId: string) {
     const url = this.configService.getApiUrl(`report/${encodeURIComponent(reportId)}/$send`);
-    return this.http.post(url, null).toPromise();
+    return this.http.post<Job>(url, null).toPromise();
   }
 
   async download(reportId: string, type: string) {

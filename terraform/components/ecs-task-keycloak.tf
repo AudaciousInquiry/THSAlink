@@ -10,7 +10,8 @@ module "ecs-task-keycloak" {
   project_code = var.project_code
 
   # TFVARS
-  image_repository = "quay.io/keycloak"
+  //image_repository = "quay.io/keycloak"
+  image_repository = var.docker_image_repository
   image_name = var.keycloak_docker_image_name
   image_tag = var.keycloak_docker_tag
   ecs_task_role = data.terraform_remote_state.infra.outputs.iam-role-arn
