@@ -6,6 +6,7 @@ import {ReportService} from '../services/report.service';
 import {ReportDefinitionService} from '../services/report-definition.service';
 import {Router} from '@angular/router';
 import * as moment from 'moment';
+import {Job} from '../model/job';
 
 @Component({
   selector: 'nandina-generate',
@@ -47,7 +48,7 @@ export class GenerateComponent implements OnInit {
   onStartDateSelected() {
     this.startDate = getFhirDate(this.criteria.periodStart);
     this.criteria.periodEnd = this.criteria.periodStart;
-    this.endDate = getFhirDate(this.criteria.periodEnd)
+    this.endDate = getFhirDate(this.criteria.periodEnd);
   }
 
   onEndDateSelected() {
@@ -65,7 +66,7 @@ export class GenerateComponent implements OnInit {
     try {
 
       if (this.endDate < this.startDate) {
-        alert("Report End Date must be same or after Report Start Date.");
+        alert('Report End Date must be same or after Report Start Date.');
         return;
       }
       this.loading = true;
@@ -92,18 +93,24 @@ export class GenerateComponent implements OnInit {
       periodEndDate.add(59, 'minutes');
       periodEndDate.add(59, 'seconds');
 
+      let generateJob: Job;
+
       try {
-        const generateResponse = await this.reportService.generate(this.criteria.reportDef.bundleIds, formatDateToISO(periodStart), formatDateToISO(periodEndDate));
-        await this.router.navigate(['review', generateResponse.masterId]);
+        generateJob = await this.reportService.generateNew(this.criteria.reportDef.bundleIds, formatDateToISO(periodStart), formatDateToISO(periodEndDate));
+        await this.router.navigate(['review']);
+        // await this.router.navigate(['review', generateResponse.masterId]);
       } catch (ex) {
         if (ex.status === 409) {
           if (confirm('A report already exists for the selected criteria. Would you like to re-generate the report?')) {
             try {
-              const generateResponse = await this.reportService.generate(this.criteria.reportDef.bundleIds, formatDateToISO(periodStart), formatDateToISO(periodEndDate), true);
-              await this.router.navigate(['review', generateResponse.masterId]);
+              generateJob = await this.reportService.generateNew(this.criteria.reportDef.bundleIds, formatDateToISO(periodStart), formatDateToISO(periodEndDate), true);
+              await this.router.navigate(['review']);
+              // await this.router.navigate(['review', generateResponse.masterId]);
             } catch (ex) {
               this.toastService.showException('Error generating report', ex);
             }
+            this.toastService.showInfo('Report generation started - Job id ' + generateJob.id);
+            this.reportGenerated = true;
           }
         } else {
           this.toastService.showException('Error generating report', ex);
@@ -111,7 +118,8 @@ export class GenerateComponent implements OnInit {
         return;
       }
 
-      this.toastService.showInfo('Report generated!');
+      // this.toastService.showInfo('Report generated!');
+      this.toastService.showInfo('Report generation started - Job id ' + generateJob.id);
       this.reportGenerated = true;
 
     } catch (ex) {
