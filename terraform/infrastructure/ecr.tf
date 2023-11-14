@@ -73,3 +73,10 @@ resource "aws_ecrpublic_repository" "thsa-link-cli-parkland-csv" {
     CreatedBy = "terraform"
   }
 }
+
+resource "aws_ecrpublic_repository" "thsa-link-keycloak" {
+  repository_name = "thsa-link-keycloak"
+  tags = {
+    CreatedBy = "terraform"
+  }
+}
