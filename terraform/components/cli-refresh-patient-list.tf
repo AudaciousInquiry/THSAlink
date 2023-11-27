@@ -44,7 +44,7 @@ resource "aws_scheduler_schedule" "refresh-patient-list-schedule" {
 
   target {
     arn      = data.terraform_remote_state.infra.outputs.ecs_cluster_arn
-    role_arn = aws_iam_role.scheduler-role.arn
+    role_arn = aws_iam_role.cli-scheduler-role.arn
     ecs_parameters {
       task_definition_arn = module.ecs-task-refresh-patient-list.arn
       task_count = "1"
