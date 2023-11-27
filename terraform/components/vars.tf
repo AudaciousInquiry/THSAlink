@@ -1,20 +1,25 @@
 variable "aws_region" {
+  description = "The region for components setup by Terraform.  us-east-1 for example."
   type = string
 }
 
 variable "aws_profile" {
+  description = "The name of the configuration profile on this machine for the AWS Account.  As configured in ~/.aws/"
   type = string
 }
 
 variable "aws_account" {
+  description = "The numerical account number for the AWS account."
   type = string
 }
 
 variable "environment" {
+  description = "Intended to describe level of the environment.  For example: dev, test or prod"
   type = string
 }
 
 variable "customer" {
+  description = "A code to describe the customer.  First proof of concept, for example, being thsa."
   type = string
 }
 

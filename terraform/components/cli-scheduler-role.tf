@@ -1,4 +1,4 @@
-resource "aws_iam_role" "scheduler-role" {
+resource "aws_iam_role" "cli-scheduler-role" {
   name = "${var.environment}-${var.customer}-${var.project_code}-schedulerRole"
   assume_role_policy = jsonencode({
     "Version": "2012-10-17",
