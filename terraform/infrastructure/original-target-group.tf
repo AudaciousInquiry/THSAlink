@@ -317,7 +317,7 @@ resource "aws_lb_target_group" "tfer--thsa-saner-app-group" {
 */
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
   // TODO - why did this have a different cert resource, its the same as the others....
-  certificate_arn = "arn:aws:acm:us-east-1:630722759411:certificate/c3fc81c7-fddc-44d4-8439-333030fb4c24"
+  certificate_arn = "arn:aws:acm:us-east-1:630722759411:certificate/6db73f72-6c90-4068-8624-ab0a43182271"
 
   default_action {
     order            = "1"
@@ -503,14 +503,17 @@ resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule2" {
  LISTENER RULES - END
 */
 
-resource "aws_lb_target_group_attachment" "tfer--thsa-link-api-groupattachment" {
-  target_group_arn = aws_lb_target_group.tfer--thsa-link-api.arn
-  target_id        = var.legacy_link_ec2_server
-}
-
 resource "aws_lb_target_group_attachment" "tfer--thsa-dashboard-groupattachment" {
   target_group_arn = aws_lb_target_group.tfer--thsa-dashboard.arn
   target_id        = var.legacy_esri_ec2_server
+}
+
+/*
+// NOTE - commenting these out 14-Dec-2023 as the original EC2 instance
+//        has been terminated.
+resource "aws_lb_target_group_attachment" "tfer--thsa-link-api-groupattachment" {
+  target_group_arn = aws_lb_target_group.tfer--thsa-link-api.arn
+  target_id        = var.legacy_link_ec2_server
 }
 
 resource "aws_lb_target_group_attachment" "tfer--thsa-link-consumer-groupattachment" {
@@ -537,6 +540,7 @@ resource "aws_lb_target_group_attachment" "tfer--thsa-link-web-groupattachment" 
   target_group_arn = aws_lb_target_group.tfer--thsa-link-web.arn
   target_id        = var.legacy_link_ec2_server
 }
+*/
 
 // ALL THE PREVIOUSLY USED IMPORTS
 /*

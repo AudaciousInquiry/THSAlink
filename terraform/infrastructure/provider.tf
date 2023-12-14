@@ -1,4 +1,3 @@
-provider "aws" {
-  region = var.aws_region
-  profile = var.aws_profile
-}
+// NOTE - Necessary AWS region and profile assumed to have been set
+//        in environment variables.  AWS_REGION and AWS_PROFILE
+provider "aws" {}
