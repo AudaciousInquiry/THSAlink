@@ -31,8 +31,11 @@ variable "subnets" {
     EOF
 }
 
-variable "legacy_esri_ec2_server" {
+variable "esri_ec2_instance_id" {
     type = string
+    description = <<EOF
+        The ID of the EC2 instance that will be used to run the ArcGIS Server.
+    EOF
 }
 
 // Needed to create DataSync EFS Location
