@@ -505,7 +505,7 @@ resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule2" {
 
 resource "aws_lb_target_group_attachment" "tfer--thsa-dashboard-groupattachment" {
   target_group_arn = aws_lb_target_group.tfer--thsa-dashboard.arn
-  target_id        = var.legacy_esri_ec2_server
+  target_id        = var.esri_ec2_instance_id
 }
 
 /*
