@@ -25,10 +25,10 @@ variable "docker_image_repository" {
 
 variable "subnets" {
     type = list(string)
-}
-
-variable "legacy_link_ec2_server" {
-    type = string
+    description = <<EOF
+        A list of subnets that resources will use in AWS.
+        Specifying manually because subnets for this project had already been created before terraform was introduced.
+    EOF
 }
 
 variable "legacy_esri_ec2_server" {
