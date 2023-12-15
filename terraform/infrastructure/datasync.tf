@@ -23,7 +23,13 @@ module "datasync-location-efs" {
 
   efs-filesystem = module.ecs-configuration-efs.file-system
   security_groups_arns = var.security_groups_arns
-  subnets_arns = var.subnets_arns
+
+  // Datasync locations require full subnet ARNs, not just the ID.  Since we already have a variable
+  // to hold a list of subnet IDs we are here building a list of subnet ARNs.  This is a bit of a hack,
+  // and make break in the future if AWS changes the layout of the ARN.  Right now it contains the
+  // AWS Region, AWS Account ID and the subnet ID.
+  // AWS Region and Account ID are getting pulled ultimately from the provider.tf setup.
+  subnets_arns = [for s in var.subnets : "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:subnet/${s}"]
   environment = var.environment
 }
 
