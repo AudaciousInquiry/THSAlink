@@ -19,7 +19,7 @@ module "datasync-location-s3" {
 module "datasync-location-efs" {
   source = "../modules/datasync-location-efs"
 
-  depends_on = [module.ecs-configuraton-mount-target.target]
+  depends_on = [module.ecs-configuration-mount-target.target]
 
   efs-filesystem = module.ecs-configuration-efs.file-system
   security_groups_arns = var.security_groups_arns
