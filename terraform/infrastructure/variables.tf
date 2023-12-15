@@ -1,5 +1,4 @@
 # Common
-
 variable "environment" {
     type = string
     description = "The target environment for the deployment.  Intended to be dev, test, or prod"
@@ -36,11 +35,6 @@ variable "esri_ec2_instance_id" {
     description = <<EOF
         The ID of the EC2 instance that will be used to run the ArcGIS Server.
     EOF
-}
-
-// Needed to create DataSync EFS Location
-variable "subnets_arns" {
-    type = list(string)
 }
 
 variable "security_groups" {
