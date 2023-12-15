@@ -2,26 +2,25 @@
 
 variable "environment" {
     type = string
+    description = "The target environment for the deployment.  Intended to be dev, test, or prod"
 }
 
 variable "customer" {
     type = string
+    description = "This is a code that denotes the customer of this deployment.  For example: thsa"
 }
 
 variable "project_code" {
     type = string
+    description = "This is a code that denotes the project of this deployment.  For example: link or maybe saner"
 }
 
 variable "docker_image_repository" {
     type = string
-}
-
-variable "docker_image_name" {
-    type = string
-}
-
-variable "ecs_task_role" {
-    type = string
+    description = <<EOF
+        Location of the public repository containing Docker images for deployment.
+        Currently assumes this is an AWS Public EC and so will look something like: public.ecr.aws/k2c9h9v2
+    EOF
 }
 
 variable "subnets" {
