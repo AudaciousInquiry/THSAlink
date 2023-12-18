@@ -42,9 +42,9 @@ variable "security_groups" {
 }
 
 // Needed to create DataSync EFS Location
-variable "security_groups_arns" {
-    type = list(string)
-}
+#variable "security_groups_arns" {
+#    type = list(string)
+#}
 
 variable "vpc_id" {
     type = string
