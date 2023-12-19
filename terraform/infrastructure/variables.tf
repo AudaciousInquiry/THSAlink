@@ -56,6 +56,13 @@ variable "vpc_id" {
 
 variable "resource_owner" {
     type = string
+    description = <<EOF
+        The name of the person creating the AWS resource.
+        This is used only in Tags on AWS resources, hopefully as a way to give a point of contact.
+        You may set this in a tfvars file or via TF_VAR_resource_owner environment variable.
+        Else the default value will be taken.
+    EOF
+    default = "Not Specified via Terraform"
 }
 
 # ****************************************************
