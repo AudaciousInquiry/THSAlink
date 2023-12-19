@@ -3,8 +3,7 @@ module "ecs-service-api" {
 
   application_code = "api"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
+  aws_region = data.aws_region.current.name
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
@@ -27,8 +26,7 @@ module "ecs-service-consumer" {
 
   application_code = "consumer"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
+  aws_region = data.aws_region.current.name
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
@@ -51,8 +49,7 @@ module "ecs-service-cqf" {
 
   application_code = "cqf"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
+  aws_region = data.aws_region.current.name
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
@@ -75,8 +72,7 @@ module "ecs-service-datastore" {
 
   application_code = "datastore"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
+  aws_region = data.aws_region.current.name
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
@@ -99,8 +95,7 @@ module "ecs-service-keycloak" {
 
   application_code = "keycloak"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
+  aws_region = data.aws_region.current.name
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
@@ -123,8 +118,7 @@ module "ecs-service-web" {
 
   application_code = "web"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
+  aws_region = data.aws_region.current.name
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
