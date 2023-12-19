@@ -8,11 +8,6 @@ variable "aws_profile" {
   type = string
 }
 
-variable "aws_account" {
-  description = "The numerical account number for the AWS account."
-  type = string
-}
-
 variable "environment" {
   description = "Intended to describe level of the environment.  For example: dev, test or prod"
   type = string
