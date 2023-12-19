@@ -46,7 +46,7 @@ resource "aws_iam_role" "generate-report" {
         {
           "Effect": "Allow",
           "Action": "logs:CreateLogGroup",
-          "Resource": "arn:aws:logs:us-east-1:${var.aws_account}:*"
+          "Resource": "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:*"
         },
         {
           "Effect": "Allow",
@@ -55,7 +55,7 @@ resource "aws_iam_role" "generate-report" {
             "logs:PutLogEvents"
           ],
           "Resource": [
-            "arn:aws:logs:us-east-1:${var.aws_account}:log-group:/aws/lambda/*"
+            "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*"
           ]
         }
       ]
@@ -76,7 +76,7 @@ resource "aws_iam_role" "generate-report-lambda-scheduler-role" {
         "Action": "sts:AssumeRole",
         "Condition": {
           "StringEquals": {
-            "aws:SourceAccount": var.aws_account
+            "aws:SourceAccount": data.aws_caller_identity.current.account_id
           }
         }
       }
@@ -96,8 +96,8 @@ resource "aws_iam_role" "generate-report-lambda-scheduler-role" {
             "lambda:InvokeFunction"
           ],
           "Resource": [
-            "arn:aws:lambda:us-east-1:${var.aws_account}:function:${aws_lambda_function.generate-report.function_name}:*",
-            "arn:aws:lambda:us-east-1:${var.aws_account}:function:${aws_lambda_function.generate-report.function_name}"
+            "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${aws_lambda_function.generate-report.function_name}:*",
+            "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${aws_lambda_function.generate-report.function_name}"
           ]
         }
       ]
