@@ -337,7 +337,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-consumer.arn
@@ -356,7 +356,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-hapi.arn
@@ -394,7 +394,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-api.arn
@@ -413,7 +413,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-cqf.arn
@@ -432,7 +432,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-web.arn

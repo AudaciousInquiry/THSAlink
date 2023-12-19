@@ -47,10 +47,11 @@ variable "security_groups" {
 
 variable "vpc_id" {
     type = string
-}
-
-variable "certificate_arn" {
-    type = string
+    description = <<EOF
+        The identifier of the VPC that AWS resources will be stood up in.
+        Right now this project is setup for everything to be in one VPC.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
 variable "loadbalancer_arn" {
