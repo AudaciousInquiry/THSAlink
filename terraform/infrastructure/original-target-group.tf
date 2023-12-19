@@ -325,7 +325,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
     type             = "forward"
   }
 
-  load_balancer_arn = "arn:aws:elasticloadbalancing:us-east-1:630722759411:loadbalancer/app/thsa-alb/82b4c9b383f100ea"
+  load_balancer_arn = aws_lb.loadbalancer--thsa-alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -344,7 +344,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.api_loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.consumer_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -363,7 +363,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.api_loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.datastore_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -382,7 +382,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.api_loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.keycloak_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -401,7 +401,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.api_loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.api_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -420,7 +420,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.api_loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.cqf_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -439,7 +439,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.api_loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.web_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"

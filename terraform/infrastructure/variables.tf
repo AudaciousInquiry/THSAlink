@@ -54,15 +54,6 @@ variable "vpc_id" {
     EOF
 }
 
-variable "api_loadbalancer_arn" {
-    type = string
-    description = <<EOF
-        The identifier for the API Load Balancer.  This is the load balancer that hosts the
-        API, and various other non-UI servers.  Such as CQF, Data Store, etc...
-        Specifying manually as this was created prior to Terraform introduction into the project.
-    EOF
-}
-
 variable "resource_owner" {
     type = string
 }
