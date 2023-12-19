@@ -3,8 +3,6 @@ module "ecs-task-cqf" {
 
   application_code = "cqf"
 
-  aws_region = var.aws_region
-  aws_profile = var.aws_profile
   environment = var.environment
   customer = var.customer
   project_code = var.project_code

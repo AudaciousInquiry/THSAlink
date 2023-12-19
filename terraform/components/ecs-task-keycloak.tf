@@ -3,8 +3,6 @@ module "ecs-task-keycloak" {
 
   application_code = "keycloak"
 
-  aws_region = data.aws_caller_identity.current.account_id
-  aws_profile = var.aws_profile
   environment = var.environment
   customer = var.customer
   project_code = var.project_code
