@@ -26,7 +26,7 @@ variable "subnets" {
     type = list(string)
     description = <<EOF
         A list of subnets that resources will use in AWS.
-        Specifying manually because subnets for this project had already been created before terraform was introduced.
+        Specifying manually as these were created prior to Terraform introduction into the project.
     EOF
 }
 
@@ -39,12 +39,11 @@ variable "esri_ec2_instance_id" {
 
 variable "security_groups" {
     type = list(string)
+    description = <<EOF
+        A list of AWS Security Groups that resources will use in AWS.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
-
-// Needed to create DataSync EFS Location
-#variable "security_groups_arns" {
-#    type = list(string)
-#}
 
 variable "vpc_id" {
     type = string
