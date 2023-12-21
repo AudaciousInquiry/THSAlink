@@ -8,7 +8,7 @@ module "ecs-service-api" {
   customer = var.customer
   project_code = var.project_code
 
-  subnets = var.subnets
+  subnets = var.subnets["primary"]
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
@@ -31,7 +31,7 @@ module "ecs-service-consumer" {
   customer = var.customer
   project_code = var.project_code
 
-  subnets = var.subnets
+  subnets = var.subnets["primary"]
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
@@ -54,7 +54,7 @@ module "ecs-service-cqf" {
   customer = var.customer
   project_code = var.project_code
 
-  subnets = var.subnets
+  subnets = var.subnets["primary"]
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
@@ -77,7 +77,7 @@ module "ecs-service-datastore" {
   customer = var.customer
   project_code = var.project_code
 
-  subnets = var.subnets
+  subnets = var.subnets["primary"]
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
@@ -100,7 +100,7 @@ module "ecs-service-keycloak" {
   customer = var.customer
   project_code = var.project_code
 
-  subnets = var.subnets
+  subnets = var.subnets["primary"]
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
@@ -123,7 +123,7 @@ module "ecs-service-web" {
   customer = var.customer
   project_code = var.project_code
 
-  subnets = var.subnets
+  subnets = var.subnets["primary"]
   security_groups = var.security_groups
 
   ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
