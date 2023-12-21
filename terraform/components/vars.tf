@@ -53,10 +53,6 @@ variable "vpc_id" {
     EOF
 }
 
-variable "loadbalancer_arn" {
-  type = string
-}
-
 # DEFAULT CONTAINER STUFF
 variable "default_cpu_size" {
   type = string
