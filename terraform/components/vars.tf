@@ -22,7 +22,12 @@ variable "docker_image_repository" {
 }
 
 variable "subnets" {
-  type = map(list(string))
+  type = object(
+    {
+    primary = list(string)
+    secondary = list(string)
+    }
+  )
   description = <<EOF
     Subnets that resources in AWS will use.  This is setup as a map so you can have different "categories"
     so to speak of subnets.  Intented to be primary and secondary.  This is a result of how THSALink was
