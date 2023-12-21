@@ -1,27 +1,34 @@
 variable "environment" {
-  description = "Intended to describe level of the environment.  For example: dev, test or prod"
+  description = "The target environment for the deployment.  Intended to be dev, test, or prod"
   type = string
 }
 
 variable "customer" {
-  description = "A code to describe the customer.  First proof of concept, for example, being thsa."
+  description = "This is a code that denotes the customer of this deployment.  For example: thsa"
   type = string
 }
 
 variable "project_code" {
   type = string
+  description = "This is a code that denotes the project of this deployment.  For example: link or maybe saner"
 }
 
 variable "docker_image_repository" {
   type = string
+  description = <<EOF
+        Location of the public repository containing Docker images for deployment.
+        Currently assumes this is an AWS Public EC and so will look something like: public.ecr.aws/k2c9h9v2
+    EOF
 }
 
 variable "subnets" {
-  type = list(string)
-}
-
-variable "subnets_b" {
-  type = list(string)
+  type = map(list(string))
+  description = <<EOF
+    Subnets that resources in AWS will use.  This is setup as a map so you can have different "categories"
+    so to speak of subnets.  Intented to be primary and secondary.  This is a result of how THSALink was
+    originally configured pre-Terraform and can probably be made cleaner in a fresh project.
+    Existing subnet IDs manually specified as they were created prior to Terraform introduction into the project.
+  EOF
 }
 
 variable "security_groups" {

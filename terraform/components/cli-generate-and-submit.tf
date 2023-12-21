@@ -49,7 +49,7 @@
 #      task_count = "1"
 #      launch_type = "FARGATE"
 #      network_configuration {
-#        subnets = var.subnets
+#        subnets = var.subnets["primary"]
 #        security_groups = var.security_groups
 #        assign_public_ip = false
 #      }
