@@ -38,13 +38,19 @@ variable "subnets" {
 
 variable "security_groups" {
   type = list(string)
+  description = <<EOF
+        A list of AWS Security Groups that resources will use in AWS.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
 variable "vpc_id" {
   type = string
-}
-variable "certificate_arn" {
-  type = string
+  description = <<EOF
+        The identifier of the VPC that AWS resources will be stood up in.
+        Right now this project is setup for everything to be in one VPC.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
 variable "loadbalancer_arn" {
