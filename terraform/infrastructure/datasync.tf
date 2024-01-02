@@ -49,15 +49,3 @@ module "configuration-sync-task" {
   source_location = module.datasync-location-s3.location
   environment = var.environment
 }
-
-/*
-resource "null_resource" "trigger-task" {
-  depends_on = [module.datasync-location-efs, module.datasync-location-s3, module.configuration-sync-task]
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "Triggering DataSync Task...."
-      aws datasync start-task-execution --profile ${var.aws_profile} --task-arn ${module.configuration-sync-task.task.arn}
-    EOT
-  }
-}
-*/
