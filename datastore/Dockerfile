@@ -1,7 +1,5 @@
-FROM tomcat:9.0.65-jre17-temurin-jammy
+FROM openjdk:19-jdk-buster
 RUN apt-get update && apt-get install -y netcat
-RUN useradd -U -d ${CATALINA_HOME} -s /bin/bash tomcat && chown -R tomcat:tomcat ${CATALINA_HOME}
-USER tomcat:tomcat
-COPY datastore/target/link-datastore.war /usr/local/tomcat/webapps/ROOT.war
+COPY datastore/target/link-datastore.jar /opt/application/link-datastore.jar
 EXPOSE 8080
-CMD ["catalina.sh", "run"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=90.0", "-XX:InitialRAMPercentage=90.0", "-jar", "/opt/application/link-datastore.jar"]
