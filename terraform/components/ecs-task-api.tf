@@ -10,7 +10,7 @@ module "ecs-task-api" {
   # TFVARS
   image_repository = var.docker_image_repository
   image_name = var.api_docker_image_name
-  image_tag = var.api_docker_tag
+  image_tag = var.image["api"].tag != "" ? var.image["api"].tag : var.image["default"].tag
   ecs_task_role = data.terraform_remote_state.infra.outputs.iam-role-arn
 
   container_environment_file = jsonencode([])

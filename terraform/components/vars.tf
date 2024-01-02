@@ -53,6 +53,53 @@ variable "vpc_id" {
     EOF
 }
 
+# ECS Settings cpu_size, memory_size, container_port, external_listening_port
+
+# Image Settings tag, name
+# Add the following to terraform.tfvars
+/*
+image = {
+  "datastore" = {
+    tag = ""
+    name = "thsa-link-datastore"
+  },
+  "cqf" = {
+    tag = ""
+    name = "thsa-link-cqf"
+  },
+  "consumer" = {
+    tag = ""
+    name = "thsa-link-consumer"
+  },
+  "api" = {
+    tag = ""
+    name = "thsa-link-api"
+  },
+  "web" = {
+    tag = ""
+    name = "thsa-link-web"
+  },
+  "keycloak" = {
+    tag = "20"
+    name = "thsa-link-keycloak"
+  },
+  "default" = {
+    tag = "THSALINK-028"
+    name = ""
+  }
+}
+*/
+variable "image" {
+  type = map(
+    object(
+      {
+        tag = string
+        name = string
+      }
+    )
+  )
+}
+
 # DEFAULT CONTAINER STUFF
 variable "default_cpu_size" {
   type = string
