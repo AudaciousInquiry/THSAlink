@@ -113,25 +113,25 @@ module "ecs-service-keycloak" {
   service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
 }
 
-module "ecs-service-web" {
-  source = "../modules/ecs-service"
-
-  application_code = "web"
-
-  aws_region = data.aws_region.current.name
-  environment = var.environment
-  customer = var.customer
-  project_code = var.project_code
-
-  subnets = var.subnets["primary"]
-  security_groups = var.security_groups
-
-  ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
-  ecs_task_cqf_arn = module.ecs-task-web.arn
-
-  container_port = var.web_container_port
-  target_group = module.target-group-web.target_group
-
-  service_connect = false
-  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
-}
+#module "ecs-service-web" {
+#  source = "../modules/ecs-service"
+#
+#  application_code = "web"
+#
+#  aws_region = data.aws_region.current.name
+#  environment = var.environment
+#  customer = var.customer
+#  project_code = var.project_code
+#
+#  subnets = var.subnets["primary"]
+#  security_groups = var.security_groups
+#
+#  ecs_cluster_id = data.terraform_remote_state.infra.outputs.ecs_cluster_id
+#  ecs_task_cqf_arn = module.ecs-task-web.arn
+#
+#  container_port = var.web_container_port
+#  target_group = module.target-group-web.target_group
+#
+#  service_connect = false
+#  service_discovery_arn = data.terraform_remote_state.infra.outputs.discovery_service_arn
+#}
