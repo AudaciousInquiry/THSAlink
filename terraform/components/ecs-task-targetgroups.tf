@@ -89,20 +89,20 @@ module "target-group-keycloak" {
   container_port = var.keycloak_container_port
 }
 
-module "target-group-web" {
-  source = "../modules/target-group"
-
-  application_code = "web"
-
-  environment = var.environment
-  customer = var.customer
-  project_code = var.project_code
-
-  vpc_id = var.vpc_id
-
-  certificate_arn = data.terraform_remote_state.infra.outputs.application_certificate_arn
-  loadbalancer_arn = data.terraform_remote_state.infra.outputs.api_load_balancer.arn
-  listener_port = var.web_external_listener_port
-  healthcheck_path = "/"
-  container_port = var.web_container_port
-}
+#module "target-group-web" {
+#  source = "../modules/target-group"
+#
+#  application_code = "web"
+#
+#  environment = var.environment
+#  customer = var.customer
+#  project_code = var.project_code
+#
+#  vpc_id = var.vpc_id
+#
+#  certificate_arn = data.terraform_remote_state.infra.outputs.application_certificate_arn
+#  loadbalancer_arn = data.terraform_remote_state.infra.outputs.api_load_balancer.arn
+#  listener_port = var.web_external_listener_port
+#  healthcheck_path = "/"
+#  container_port = var.web_container_port
+#}

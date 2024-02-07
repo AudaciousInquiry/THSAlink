@@ -89,6 +89,7 @@ image = {
   }
 }
 */
+
 variable "image" {
   type = map(
     object(
