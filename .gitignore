@@ -16,6 +16,7 @@ api/src/main/resources/api-*.yml
 query/src/main/resources/query-*.yml
 
 .idea/*
+.ideaold/*
 spring-shell.log
 
 cli/cli.yml
