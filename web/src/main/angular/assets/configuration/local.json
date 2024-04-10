@@ -1,5 +1,6 @@
 {
   "apiUrl": "https://thsa1.sanerproject.org:10440/api",
+  "apiUrlLOCAL": "http://localhost:9090/api",
   "oauth": {
     "issuer": "https://thsa1.sanerproject.org:8443/realms/THSA",
     "clientId": "nhsnlink-app",

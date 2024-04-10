@@ -13,7 +13,7 @@ resource "aws_lb" "loadbalancer--thsa-alb" {
   enable_tls_version_and_cipher_suite_headers = "false"
   enable_waf_fail_open                        = "false"
   enable_xff_client_port                      = "false"
-  idle_timeout                                = "60"
+  idle_timeout                                = "120"
   internal                                    = "false"
   ip_address_type                             = "ipv4"
   load_balancer_type                          = "application"

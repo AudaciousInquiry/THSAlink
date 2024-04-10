@@ -1,4 +1,4 @@
-resource "aws_iam_role" "scheduler-role" {
+resource "aws_iam_role" "cli-scheduler-role" {
   name = "${var.environment}-${var.customer}-${var.project_code}-schedulerRole"
   assume_role_policy = jsonencode({
     "Version": "2012-10-17",
@@ -11,7 +11,7 @@ resource "aws_iam_role" "scheduler-role" {
         "Action": "sts:AssumeRole",
         "Condition": {
           "StringEquals": {
-            "aws:SourceAccount": var.aws_account
+            "aws:SourceAccount": data.aws_caller_identity.current.account_id
           }
         }
       }
@@ -31,7 +31,7 @@ resource "aws_iam_role" "scheduler-role" {
             "ecs:RunTask"
           ],
           "Resource": [
-            "arn:aws:ecs:us-east-1:${var.aws_account}:task-definition/*"
+            "arn:aws:ecs:us-east-1:${data.aws_caller_identity.current.account_id}:task-definition/*"
           ],
           "Condition": {
             "ArnLike": {

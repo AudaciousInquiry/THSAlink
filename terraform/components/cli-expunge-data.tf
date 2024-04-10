@@ -3,8 +3,6 @@
 #
 #  application_code = "expunge-data"
 #
-#  aws_region = var.aws_region
-#  aws_profile = var.aws_profile
 #  environment = var.environment
 #  customer = var.customer
 #  project_code = var.project_code
@@ -58,7 +56,7 @@
 #      task_count = "1"
 #      launch_type = "FARGATE"
 #      network_configuration {
-#        subnets = var.subnets
+#        subnets = var.subnets["primary"]
 #        security_groups = var.security_groups
 #        assign_public_ip = false
 #      }

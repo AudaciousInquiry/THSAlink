@@ -316,8 +316,8 @@ resource "aws_lb_target_group" "tfer--thsa-saner-app-group" {
  LOAD BALANCER LISTENER - START
 */
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
-  // TODO - why did this have a different cert resource, its the same as the others....
-  certificate_arn = "arn:aws:acm:us-east-1:630722759411:certificate/c3fc81c7-fddc-44d4-8439-333030fb4c24"
+
+  certificate_arn = "arn:aws:acm:us-east-1:630722759411:certificate/6db73f72-6c90-4068-8624-ab0a43182271"
 
   default_action {
     order            = "1"
@@ -325,7 +325,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
     type             = "forward"
   }
 
-  load_balancer_arn = "arn:aws:elasticloadbalancing:us-east-1:630722759411:loadbalancer/app/thsa-alb/82b4c9b383f100ea"
+  load_balancer_arn = aws_lb.loadbalancer--thsa-alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -336,15 +336,20 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
   }
 }
 
+resource "aws_lb_listener_certificate" "tfer--aws_lb_listener--thsa-dashboard-secondcert" {
+  certificate_arn = aws_acm_certificate.dashboard_sanerproject_org_exp_2025.arn
+  listener_arn    = aws_lb_listener.tfer--aws_lb_listener--thsa-dashboard.arn
+}
+
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-consumer.arn
     type             = "forward"
   }
 
-  load_balancer_arn = var.loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.consumer_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -356,14 +361,14 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-hapi.arn
     type             = "forward"
   }
 
-  load_balancer_arn = var.loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.datastore_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -382,7 +387,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
     type             = "forward"
   }
 
-  load_balancer_arn = var.loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.keycloak_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -394,14 +399,14 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-api.arn
     type             = "forward"
   }
 
-  load_balancer_arn = var.loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.api_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -413,14 +418,14 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-cqf.arn
     type             = "forward"
   }
 
-  load_balancer_arn = var.loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.cqf_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -432,14 +437,14 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
-  certificate_arn = var.certificate_arn
+  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-web.arn
     type             = "forward"
   }
 
-  load_balancer_arn = var.loadbalancer_arn
+  load_balancer_arn = aws_lb.loadbalancer--thsa-app-lb.arn
   port              = local.web_port
   protocol          = "TLS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -457,12 +462,27 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
  LISTENER RULES - START
 */
 resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule1" {
-  action {
-    order            = "1"
-    target_group_arn = aws_lb_target_group.tfer--thsa-dashboard.arn
-    type             = "forward"
-  }
+#  action {
+#    order            = "1"
+#    type = "fixed-response"
+#    fixed_response {
+#      content_type = "text/plain"
+#      message_body = "Not Yet Implemented"
+#      status_code = "501"
+#    }
+#  }
 
+  action {
+    type = "redirect"
+
+    redirect {
+      status_code = "HTTP_302"
+      host = "thsa.sanerproject.org"
+      protocol = "HTTPS"
+      port = "443"
+      path = "/portal/home/"
+    }
+  }
   condition {
     host_header {
       values = ["dashboard.sanerproject.org"]
@@ -503,14 +523,17 @@ resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule2" {
  LISTENER RULES - END
 */
 
+resource "aws_lb_target_group_attachment" "tfer--thsa-dashboard-groupattachment" {
+  target_group_arn = aws_lb_target_group.tfer--thsa-dashboard.arn
+  target_id        = var.esri_ec2_instance_id
+}
+
+/*
+// NOTE - commenting these out 14-Dec-2023 as the original EC2 instance
+//        has been terminated.
 resource "aws_lb_target_group_attachment" "tfer--thsa-link-api-groupattachment" {
   target_group_arn = aws_lb_target_group.tfer--thsa-link-api.arn
   target_id        = var.legacy_link_ec2_server
-}
-
-resource "aws_lb_target_group_attachment" "tfer--thsa-dashboard-groupattachment" {
-  target_group_arn = aws_lb_target_group.tfer--thsa-dashboard.arn
-  target_id        = var.legacy_esri_ec2_server
 }
 
 resource "aws_lb_target_group_attachment" "tfer--thsa-link-consumer-groupattachment" {
@@ -537,6 +560,7 @@ resource "aws_lb_target_group_attachment" "tfer--thsa-link-web-groupattachment" 
   target_group_arn = aws_lb_target_group.tfer--thsa-link-web.arn
   target_id        = var.legacy_link_ec2_server
 }
+*/
 
 // ALL THE PREVIOUSLY USED IMPORTS
 /*

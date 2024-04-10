@@ -33,3 +33,11 @@ output "application_certificate_arn" {
 output "lambda_deploy_bucket" {
   value = module.lambda-deploy-s3.s3_bucket
 }
+
+output "esri_load_balancer" {
+  value = aws_lb.loadbalancer--thsa-alb
+}
+
+output "api_load_balancer" {
+  value = aws_lb.loadbalancer--thsa-app-lb
+}

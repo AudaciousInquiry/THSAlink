@@ -43,7 +43,7 @@ resource "aws_iam_role" "parkland-inventory-import-csv" {
         {
           "Effect": "Allow",
           "Action": "logs:CreateLogGroup",
-          "Resource": "arn:aws:logs:us-east-1:${var.aws_account}:*"
+          "Resource": "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:*"
         },
         {
           "Effect": "Allow",
@@ -52,7 +52,7 @@ resource "aws_iam_role" "parkland-inventory-import-csv" {
             "logs:PutLogEvents"
           ],
           "Resource": [
-            "arn:aws:logs:us-east-1:${var.aws_account}:log-group:/aws/lambda/*"
+            "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*"
           ]
         }
       ]
@@ -91,7 +91,7 @@ resource "aws_iam_role" "parkland-inventory-import-csv-lambda-scheduler-role" {
         "Action": "sts:AssumeRole",
         "Condition": {
           "StringEquals": {
-            "aws:SourceAccount": var.aws_account
+            "aws:SourceAccount": data.aws_caller_identity.current.account_id
           }
         }
       }
@@ -111,8 +111,8 @@ resource "aws_iam_role" "parkland-inventory-import-csv-lambda-scheduler-role" {
             "lambda:InvokeFunction"
           ],
           "Resource": [
-            "arn:aws:lambda:us-east-1:${var.aws_account}:function:${aws_lambda_function.parkland-inventory-import-csv.function_name}:*",
-            "arn:aws:lambda:us-east-1:${var.aws_account}:function:${aws_lambda_function.parkland-inventory-import-csv.function_name}"
+            "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${aws_lambda_function.parkland-inventory-import-csv.function_name}:*",
+            "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${aws_lambda_function.parkland-inventory-import-csv.function_name}"
           ]
         }
       ]
@@ -143,8 +143,8 @@ resource "aws_lambda_function" "parkland-inventory-import-csv" {
 
   vpc_config {
     security_group_ids = var.security_groups
-    //subnet_ids         = var.subnets
-    subnet_ids = var.subnets_b // thsa-saner-server-1b
+    //subnet_ids         = var.subnets["primary"]
+    subnet_ids = var.subnets["secondary"] // thsa-saner-server-1b
     // ECS run in thsa-saner-server-1a because they need to talk.  This is using thsa-saner-server-1b
     // to get NAT gateway for agreed on external IP.
   }

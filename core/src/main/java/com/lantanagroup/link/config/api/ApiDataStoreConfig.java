@@ -22,4 +22,8 @@ public class ApiDataStoreConfig {
   private String password;
 
   private String socketTimeout;
+
+  private String connectionTimeout;
+
+  private String connectionRequestTimeout;
 }
