@@ -316,7 +316,7 @@ resource "aws_lb_target_group" "tfer--thsa-saner-app-group" {
  LOAD BALANCER LISTENER - START
 */
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
-  // TODO - why did this have a different cert resource, its the same as the others....
+
   certificate_arn = "arn:aws:acm:us-east-1:630722759411:certificate/6db73f72-6c90-4068-8624-ab0a43182271"
 
   default_action {
@@ -334,6 +334,11 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-dashboard" {
     Environment = var.environment,
     CreatedBy = "terraform"
   }
+}
+
+resource "aws_lb_listener_certificate" "tfer--aws_lb_listener--thsa-dashboard-secondcert" {
+  certificate_arn = aws_acm_certificate.dashboard_sanerproject_org_exp_2025.arn
+  listener_arn    = aws_lb_listener.tfer--aws_lb_listener--thsa-dashboard.arn
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
@@ -457,12 +462,27 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
  LISTENER RULES - START
 */
 resource "aws_lb_listener_rule" "tfer--aws_lb_listener_rule--rule1" {
-  action {
-    order            = "1"
-    target_group_arn = aws_lb_target_group.tfer--thsa-dashboard.arn
-    type             = "forward"
-  }
+#  action {
+#    order            = "1"
+#    type = "fixed-response"
+#    fixed_response {
+#      content_type = "text/plain"
+#      message_body = "Not Yet Implemented"
+#      status_code = "501"
+#    }
+#  }
 
+  action {
+    type = "redirect"
+
+    redirect {
+      status_code = "HTTP_302"
+      host = "thsa.sanerproject.org"
+      protocol = "HTTPS"
+      port = "443"
+      path = "/portal/home/"
+    }
+  }
   condition {
     host_header {
       values = ["dashboard.sanerproject.org"]
