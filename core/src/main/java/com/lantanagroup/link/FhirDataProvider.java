@@ -50,6 +50,14 @@ public class FhirDataProvider {
       this.ctx.getRestfulClientFactory().setSocketTimeout(Integer.parseInt(config.getSocketTimeout()));
     }
 
+    if (StringUtils.isNotEmpty(config.getConnectionTimeout())) {
+      ctx.getRestfulClientFactory().setConnectTimeout(Integer.parseInt(config.getConnectionTimeout()));
+    }
+
+    if (StringUtils.isNotEmpty(config.getConnectionRequestTimeout())) {
+      ctx.getRestfulClientFactory().setConnectionRequestTimeout(Integer.parseInt(config.getConnectionRequestTimeout()));
+    }
+
     IGenericClient client = this.ctx.newRestfulGenericClient(config.getBaseUrl());
 
     if (StringUtils.isNotEmpty(config.getUsername()) && StringUtils.isNotEmpty(config.getPassword())) {

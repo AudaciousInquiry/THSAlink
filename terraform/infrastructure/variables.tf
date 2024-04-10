@@ -1,126 +1,66 @@
 # Common
-
-variable "aws_region" {
-    type = string
-}
-
-variable "aws_profile" {
-    type = string
-}
-
 variable "environment" {
     type = string
+    description = "The target environment for the deployment.  Intended to be dev, test, or prod"
 }
 
 variable "customer" {
     type = string
+    description = "This is a code that denotes the customer of this deployment.  For example: thsa"
 }
 
 variable "project_code" {
     type = string
+    description = "This is a code that denotes the project of this deployment.  For example: link or maybe saner"
 }
 
 variable "docker_image_repository" {
     type = string
-}
-
-variable "docker_image_name" {
-    type = string
-}
-
-variable "ecs_task_role" {
-    type = string
+    description = <<EOF
+        Location of the public repository containing Docker images for deployment.
+        Currently assumes this is an AWS Public EC and so will look something like: public.ecr.aws/k2c9h9v2
+    EOF
 }
 
 variable "subnets" {
     type = list(string)
+    description = <<EOF
+        A list of subnets that resources will use in AWS.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
-variable "legacy_link_ec2_server" {
+variable "esri_ec2_instance_id" {
     type = string
-}
-
-variable "legacy_esri_ec2_server" {
-    type = string
-}
-
-// Needed to create DataSync EFS Location
-variable "subnets_arns" {
-    type = list(string)
+    description = <<EOF
+        The ID of the EC2 instance that will be used to run the ArcGIS Server.
+    EOF
 }
 
 variable "security_groups" {
     type = list(string)
-}
-
-// Needed to create DataSync EFS Location
-variable "security_groups_arns" {
-    type = list(string)
+    description = <<EOF
+        A list of AWS Security Groups that resources will use in AWS.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
 variable "vpc_id" {
     type = string
-}
-
-variable "certificate_arn" {
-    type = string
-}
-
-variable "loadbalancer_arn" {
-    type = string
+    description = <<EOF
+        The identifier of the VPC that AWS resources will be stood up in.
+        Right now this project is setup for everything to be in one VPC.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
 variable "resource_owner" {
     type = string
-}
-
-# ****************************************************
-# CQF - Task
-# ****************************************************
-variable "cqf_docker_image_tag" {
-    type = string
-}
-
-variable "cqf_spring_datasource_driver_class_name" {
-    type = string
-}
-
-variable "cqf_spring_datasource_max_active" {
-    type = string
-}
-
-variable "cqf_spring_datasource_password" {
-    type = string
-}
-
-variable "cqf_spring_datasource_username" {
-    type = string
-}
-
-variable "cqf_spring_datasource_url" {
-    type = string
-}
-
-variable "cqf_spring_hibernate_dialect" {
-    type = string
-}
-
-variable "cqf_spring_hibernate_search_enabled" {
-    type = string
-}
-
-variable "cqf_cpu_size" {
-    type = string
-}
-
-variable "cqf_memory_size" {
-    type = string
-}
-
-variable "cqf_container_port" {
-    type = number
-}
-
-variable "cqf_external_listener_port" {
-    type = string
+    description = <<EOF
+        The name of the person creating the AWS resource.
+        This is used only in Tags on AWS resources, hopefully as a way to give a point of contact.
+        You may set this in a tfvars file or via TF_VAR_resource_owner environment variable.
+        Else the default value will be taken.
+    EOF
+    default = "Not Specified via Terraform"
 }

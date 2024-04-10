@@ -1,52 +1,104 @@
-variable "aws_region" {
-  type = string
-}
-
-variable "aws_profile" {
-  type = string
-}
-
-variable "aws_account" {
-  type = string
-}
-
 variable "environment" {
+  description = "The target environment for the deployment.  Intended to be dev, test, or prod"
   type = string
 }
 
 variable "customer" {
+  description = "This is a code that denotes the customer of this deployment.  For example: thsa"
   type = string
 }
 
 variable "project_code" {
   type = string
+  description = "This is a code that denotes the project of this deployment.  For example: link or maybe saner"
 }
 
 variable "docker_image_repository" {
   type = string
+  description = <<EOF
+        Location of the public repository containing Docker images for deployment.
+        Currently assumes this is an AWS Public EC and so will look something like: public.ecr.aws/k2c9h9v2
+    EOF
 }
 
 variable "subnets" {
-  type = list(string)
-}
-
-variable "subnets_b" {
-  type = list(string)
+  type = object(
+    {
+    primary = list(string)
+    secondary = list(string)
+    }
+  )
+  description = <<EOF
+    Subnets that resources in AWS will use.  This is setup as a map so you can have different "categories"
+    so to speak of subnets.  Intented to be primary and secondary.  This is a result of how THSALink was
+    originally configured pre-Terraform and can probably be made cleaner in a fresh project.
+    Existing subnet IDs manually specified as they were created prior to Terraform introduction into the project.
+  EOF
 }
 
 variable "security_groups" {
   type = list(string)
+  description = <<EOF
+        A list of AWS Security Groups that resources will use in AWS.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
 variable "vpc_id" {
   type = string
-}
-variable "certificate_arn" {
-  type = string
+  description = <<EOF
+        The identifier of the VPC that AWS resources will be stood up in.
+        Right now this project is setup for everything to be in one VPC.
+        Specifying manually as these were created prior to Terraform introduction into the project.
+    EOF
 }
 
-variable "loadbalancer_arn" {
-  type = string
+# ECS Settings cpu_size, memory_size, container_port, external_listening_port
+
+# Image Settings tag, name
+# Add the following to terraform.tfvars
+/*
+image = {
+  "datastore" = {
+    tag = ""
+    name = "thsa-link-datastore"
+  },
+  "cqf" = {
+    tag = ""
+    name = "thsa-link-cqf"
+  },
+  "consumer" = {
+    tag = ""
+    name = "thsa-link-consumer"
+  },
+  "api" = {
+    tag = ""
+    name = "thsa-link-api"
+  },
+  "web" = {
+    tag = ""
+    name = "thsa-link-web"
+  },
+  "keycloak" = {
+    tag = "20"
+    name = "thsa-link-keycloak"
+  },
+  "default" = {
+    tag = "THSALINK-028"
+    name = ""
+  }
+}
+*/
+
+variable "image" {
+  type = map(
+    object(
+      {
+        tag = string
+        name = string
+      }
+    )
+  )
 }
 
 # DEFAULT CONTAINER STUFF

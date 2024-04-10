@@ -4,7 +4,7 @@ module "ecs-configuration-efs" {
   environment = var.environment
 }
 
-module "ecs-configuraton-mount-target" {
+module "ecs-configuration-mount-target" {
   source          = "../modules/efs-mount-target"
   file_system     = module.ecs-configuration-efs.file-system
   security_groups = var.security_groups
