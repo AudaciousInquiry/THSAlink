@@ -5,6 +5,7 @@ locals {
   keycloak_port = "12443" // original = 8443
   cqf_port = "9443" // original = 9443
   web_port = "11443" // original = 443
+  thsa1_certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2025.arn
 }
 /*
  TARGET GROUP - START
@@ -342,7 +343,7 @@ resource "aws_lb_listener_certificate" "tfer--aws_lb_listener--thsa-dashboard-se
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
-  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  certificate_arn = local.thsa1_certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-consumer.arn
@@ -361,7 +362,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-consumer" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
-  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  certificate_arn = local.thsa1_certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-hapi.arn
@@ -380,7 +381,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-hapi" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
-  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  certificate_arn = local.thsa1_certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-keycloak.arn
@@ -399,7 +400,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-keycloak" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
-  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  certificate_arn = local.thsa1_certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-api.arn
@@ -418,7 +419,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-api" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
-  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  certificate_arn = local.thsa1_certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-cqf.arn
@@ -437,7 +438,7 @@ resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-cqf" {
 }
 
 resource "aws_lb_listener" "tfer--aws_lb_listener--thsa-link-web" {
-  certificate_arn = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  certificate_arn = local.thsa1_certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.tfer--thsa-link-web.arn
