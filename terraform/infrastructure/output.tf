@@ -27,7 +27,7 @@ output "discovery_service_arn" {
 }
 
 output "application_certificate_arn" {
-  value = aws_acm_certificate.thsa1_sanerproject_org_exp_2024.arn
+  value = aws_acm_certificate.thsa1_sanerproject_org_exp_2025.arn
 }
 
 output "lambda_deploy_bucket" {
